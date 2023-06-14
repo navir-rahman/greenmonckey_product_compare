@@ -1,0 +1,340 @@
+<style>
+   .alm-grid-{{section.id}}{
+    margin-top:{{ section.settings.margin-top }}px;
+     margin-bottom:{{ section.settings.margin-bottom}}px;
+    }
+    .lottie_cont-{{ section.id }}{
+      position:sticky;
+      top:0;
+        display:grid;
+
+      {% if section.settings.full-width %}
+        grid-template-columns: 1fr;
+      {% else %}
+           grid-template-columns: 1fr 1fr;
+        {% endif %}
+        margin-left:auto;
+     margin-right:auto;
+      max-width:{{ section.settings.section-width }}px;
+          align-items: center;
+      height: 100vh;
+    }
+
+  div#main {
+      overflow: unset;
+  }
+    .text-cont{
+     display:flex;
+     flex-direction:column;
+     justify-content: center;
+      align-items:center;
+      padding:50px;
+    }
+     .text-cont h1{
+         line-height: calc(3px + 2ex + 3px);
+      font-size: calc(var(--dp-g-heading-size, var(--dp-heading-size, 35px)) * 0.9);
+
+     }
+    .text-cont p{
+         line-height: calc(3px + 3ex + 3px);
+      font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * 0.9);
+    }
+    .image-cont{
+       display:flex;
+     justify-content: center;
+    }
+    .image-cont video, .image-cont img{
+    width:100%;
+    }
+    .text-cont .texss{
+    max-width:600px;
+  }
+
+  @media ( max-width:900px ){
+    .alm-grid-{{section.id}}{
+     margin-top:0px;
+     margin-bottom:0px;
+    }
+      .btnal{
+  	margin:0 auto;
+
+
+  }
+     .lottie_cont-{{ section.id }}{
+     display:flex;
+     flex-direction:column;
+       justify-content:center;
+    }
+  .lottie_cont.mobile-reverse {
+     flex-direction:column-reverse;
+    }
+     .text-cont{
+      padding:20px;
+    }
+  }
+
+
+      {%- if section.settings.custom_css != blank -%}
+      {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+      {%- for declaration in custom_section_declarations -%}
+        {%- if declaration contains '{' -%}
+          #shopify-section-{{ section.id }} {{ declaration }} }
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+
+    /* Landscape phones and down */
+    @media (max-width: 480px) {
+
+      {%- if section.settings.mobile_custom_css != blank -%}
+        {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+        {%- for declaration in mobile_custom_declarations -%}
+          {%- if declaration contains '{' -%}
+            #shopify-section-{{ section.id }} {{ declaration }} }
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    }
+</style>
+<div class="alm-grid-container alm-grid-{{section.id}} " id="#shopify-section-{{ section.id }}">
+  <div class="lottie_cont-{{ section.id }} {% if section.settings.mobile-reverse %} mobile-reverse {% endif %}">
+    {% capture image_layout %}
+  <div class="image-cont" >
+    <div class="before-image-cont before-image-cont-{{section.id}}">
+      <img src={{ section.settings.image | img_url:"master" }}>
+    </div>
+      <div id="graph_ani">
+        
+      </div>
+  </div>
+  {% endcapture %}
+
+    {% if section.settings.layout == 'left' %}
+      {{ image_layout }}
+    {% endif %}
+
+    {% if section.settings['full-width'] != true %}
+      <div class="text-cont">
+        <div class="texss">
+          <h1>{{ section.settings.title }}</h1>
+          <div>{{ section.settings.text }}</div>
+        </div>
+      </div>
+    {% endif %}
+    {% if section.settings.layout == 'right' %}
+      {{ image_layout }}
+    {% endif %}
+  </div>
+</div>
+
+<script defer="">
+  setTimeout(function(){
+    if (window.matchMedia("(min-width: 750px)").matches) {
+   lottie_root_{{section.id | replace :"-",""}} = '{{section.settings.lottie_file}}';
+       lottie_time_{{section.id | replace :"-",""}} = {{section.settings.end_frame}};
+      lottie_height_{{section.id | replace :"-",""}} = '{{section.settings.end_frame | times: 30 }}px';
+  } else {
+      {% if section.settings.lottie_file_mob != blank %}
+   lottie_root_{{section.id | replace :"-",""}} = '{{section.settings.lottie_file_mob}}';
+      {% else %}
+    lottie_root_{{section.id | replace :"-",""}} = '{{section.settings.lottie_file}}'
+      {% endif %};
+    lottie_time_{{section.id | replace :"-",""}} = {{section.settings.end_frame_mob}};
+    lottie_height_{{section.id | replace :"-",""}} = '{{section.settings.end_frame_mob | times: 30 }}px';
+
+  }
+
+      container_{{section.id | replace :"-",""}} = document.querySelector('.alm-grid-{{section.id}} #graph_ani');
+      animMobile_{{section.id | replace :"-",""}}= lottie.loadAnimation({
+            container: container_{{section.id | replace :"-",""}},
+            renderer: 'svg',
+            autoplay: false,
+            loop: false,
+             rendererSettings: {
+     			 preserveAspectRatio: "xMidYMid meet",
+     			 className:"svgloot"
+    			},
+        path  : lottie_root_{{section.id | replace :"-",""}}
+        });
+
+      animMobile_{{section.id | replace :"-",""}}.addEventListener('data_ready', function(e) {
+        console.log('element mobile loaded');
+        loadDetect_{{section.id | replace :"-",""}}();
+        });
+    var animationDatap_{{section.id | replace :"-",""}} = 0;
+  function loadDetect_{{section.id | replace :"-",""}}(){
+
+    var scrolly_{{section.id | replace :"-",""}} = parseInt(window.scrollY/20) + 0 ;
+     var bodyRect_{{section.id | replace :"-",""}} = document.body.getBoundingClientRect(),
+      elemRect_{{section.id | replace :"-",""}} = document.querySelector(".alm-grid-{{section.id}}").getBoundingClientRect(),
+      offset_{{section.id | replace :"-",""}}   = elemRect_{{section.id | replace :"-",""}}.top - bodyRect_{{section.id | replace :"-",""}}.top;
+     animationDatap_{{section.id | replace :"-",""}} = (offset_{{section.id | replace :"-",""}} / 20) ;
+  //   document.querySelector(".showcase-image .image-ratio").style.cssText="visibility:hidden;position:absolute";
+    document.querySelector(".alm-grid-{{section.id}}").style.height=lottie_height_{{section.id | replace :"-",""}} ;
+    document.querySelector(".before-image-cont-{{section.id}}").style.display="none" ;
+     if (scrolly_{{section.id | replace :"-",""}} > animationDatap_{{section.id | replace :"-",""}} + lottie_time_{{section.id | replace :"-",""}}){
+          scrolly_{{section.id | replace :"-",""}} =  animationDatap_{{section.id | replace :"-",""}} + lottie_time_{{section.id | replace :"-",""}};
+
+  	}
+
+     animMobile_{{section.id | replace :"-",""}}.playSegments([0,scrolly_{{section.id | replace :"-",""}} - animationDatap_{{section.id | replace :"-",""}} ],true);
+      scrollDetect_{{section.id | replace :"-",""}}();
+  }
+    function scroller_{{section.id | replace :"-",""}}(){
+       let currentScroll_{{section.id | replace :"-",""}} = document.documentElement.scrollTop || document.body.scrollTop; // Get Current Scroll Value
+        animationStartp_{{section.id | replace :"-",""}} = parseInt(window.scrollY/20) + 0 ;
+       if(animationStartp_{{section.id | replace :"-",""}} < animationDatap_{{section.id | replace :"-",""}} ){
+          animationStartp_{{section.id | replace :"-",""}} =  animationDatap_{{section.id | replace :"-",""}};
+      	}
+        if(animationStartp_{{section.id | replace :"-",""}} > animationDatap_{{section.id | replace :"-",""}} + lottie_time_{{section.id | replace :"-",""}}){
+            animationStartp_{{section.id | replace :"-",""}} =  animationDatap_{{section.id | replace :"-",""}} + lottie_time_{{section.id | replace :"-",""}};
+  	}
+       // console.log(animationStartp-animationDatap);
+       animMobile_{{section.id | replace :"-",""}}.playSegments([animationStartp_{{section.id | replace :"-",""}}-animationDatap_{{section.id | replace :"-",""}},animationStartp_{{section.id | replace :"-",""}}-(animationDatap_{{section.id | replace :"-",""}}-1)], true);
+  }
+
+      function scrollDetect_{{section.id | replace :"-",""}}(){
+      window.addEventListener("scroll",scroller_{{section.id | replace :"-",""}})
+  }
+
+  },{{section.settings.decale}});
+</script>
+{% schema %}
+{
+  "name": "lottie section",
+  "class": "grid-section",
+  "settings": [
+       {
+      "type" : "range",
+      "id" : "decale",
+      "label" : "loading timeout",
+      "min" : 0,
+      "max":2000,
+      "step":100,
+      "default" :0
+    },
+{
+"type" : "range",
+"id" : "section-width",
+"label" : "section max width",
+"min" : 800,
+"max":2000,
+"step":100,
+"default" :1200
+},
+{
+"type" : "range",
+"id" : "margin-top",
+"label" : "margin-top",
+"min" : 0,
+"max":150,
+"step":10,
+"default" :100
+},
+{
+"type" : "range",
+"id" : "margin-bottom",
+"label" : "margin-bottom",
+"min" : 0,
+"max":150,
+"step":10,
+"default" :100
+},
+ {
+      "type": "select",
+      "id": "layout",
+      "label": "alignement",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "left"
+        },
+        {
+          "value": "right",
+          "label": "right"
+        }
+      ]
+    },
+ {
+      "type": "checkbox",
+      "id": "mobile-reverse",
+      "label": "mobile-reverse",
+      "default": false
+    },
+    {
+       "type": "text",
+      "id": "lottie_file",
+      "label": "lottie file"
+    },
+      {
+       "type": "text",
+      "id": "lottie_file_mob",
+      "label": "lottie file mobile"
+    },
+     {
+      "type": "checkbox",
+      "id": "full-width",
+      "label": "full width",
+      "default": false
+    },
+    {
+      "type" : "range",
+      "id" : "end_frame",
+      "label" : "end frame",
+      "min" : 20,
+      "max":500,
+      "step":5,
+      "default" :100
+    },
+     {
+      "type" : "range",
+      "id" : "end_frame_mob",
+      "label" : "end frame mobile",
+      "min" : 20,
+      "max":500,
+      "step":5,
+      "default" :100
+    },
+  {
+      "type": "image_picker",
+      "id": "image",
+      "label":"image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "title",
+      "default":"title"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "text",
+	"default":"<p>default text </p>"
+    },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "html",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "html",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    }
+  ],
+  "presets": [
+    {
+      "name":"lottie section",
+      "category":"text"
+    }
+  ]
+}
+{% endschema %}

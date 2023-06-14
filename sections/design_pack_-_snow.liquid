@@ -1,0 +1,320 @@
+{%- comment -%}
+{
+  "pack_name": "Snowfall",
+  "pack_author": "Design Packs"
+}
+{%- endcomment -%}
+
+{% comment %} Security Code - hides section when app uninstalled {% endcomment %}
+{%- unless content_for_header contains 'design_packs_file.js' -%}
+  {%- if request.design_mode -%}
+    <div class="dsgn-pck__no-app-warning">
+      <div class="dsgn-pck__no-app-warning-background">
+      </div>
+      <div class="dsgn-pck__no-app-warning-text dsgn-pck__rte">
+        <p><strong>WARNING!</strong> This premium section will not display properly without an active subscription for <a href="https://apps.shopify.com/design-packs" target="_blank" rel="nofollow">Design Packs</a>. If you need any support please email <a href="mailto:info@design-packs.com" target="_blank">info@design-packs.com</a> with your questions.</p>
+      </div>
+    </div>
+  {%- endif -%}
+  {%- break -%}
+{%- endunless -%}
+
+{%- comment -%} Settings: section variables {%- endcomment -%}
+{%- assign snowfall_amount = section.settings.snowfall_amount -%}
+
+{%- capture minify -%}
+{%- comment -%} CSS {%- endcomment -%}
+<style>
+#DP--{{ section.id }} {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+#DP--{{ section.id }} .design-packs__snowflakes {
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+}
+
+#DP--{{ section.id }} .design-packs__snowflakes > li {
+  opacity: 0;
+  list-style: none;
+  position: absolute;
+  top: 0;
+  border-radius: 100%;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  animation-name: dsgn-pck__snow-drop;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+{%- for i in (1..snowfall_amount) -%}
+  #DP--{{ section.id }} li.design-packs__snowflake-{{ i }} {
+    left: var(--left-position);
+    width: var(--snow-size);
+    height: var(--snow-size);
+    animation-duration: var(--animation-duration);
+    animation-delay: var(--animation-delay);
+    filter: blur(var(--blur));
+  }
+{%- endfor -%}
+
+@media (prefers-reduced-motion: reduce) {
+  #DP--{{ section.id }} {
+    display: none;
+  }
+}
+
+@keyframes dsgn-pck__snow-drop {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0.5;
+    margin-left: 0;
+  }
+  10% {
+    margin-left: 15px;
+  }
+  20% {
+    margin-left: 20px;
+  }
+  25% {
+    transform: translate(0, 25vh);
+    opacity: 0.75;
+  }
+  30% {
+    margin-left: 15px;
+  }
+  40% {
+    margin-left: 0;
+  }
+  50% {
+    transform: translate(0, 50vh);
+    opacity: 1;
+    margin-left: -15px;
+  }
+  60% {
+    margin-left: -20px;
+  }
+  70% {
+    margin-left: -15px;
+  }
+  75% {
+    transform: translate(0, 75vh);
+    opacity: 0.5;
+  }
+  80% {
+    margin-left: 0;
+  }
+  100% {
+    transform: translate(0, 120vh);
+    opacity: 0;
+  }
+}
+
+{%- if section.settings.custom_css != blank -%}
+  {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+  {%- for declaration in custom_section_declarations -%}
+    {%- if declaration contains '{' -%}
+      #DP--{{ section.id }} {{ declaration }} }
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+  {%- if section.settings.hide_on_mobile != blank -%}
+    #DP--{{ section.id }} {
+      display: none;
+    }
+  {%- endif -%}
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  {%- if section.settings.mobile_custom_css != blank -%}
+    {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+    {%- for declaration in mobile_custom_declarations -%}
+      {%- if declaration contains '{' -%}
+        #DP--{{ section.id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+}
+</style>
+
+{% comment %} HTML {% endcomment %}
+<section id="DP--{{ section.id }}" class="DP--{{ section.id }} dsgn-pck__snow dsgn-pck__section" aria-hidden="true">
+  <ul class="design-packs__snowflakes">
+  {%- for i in (1..snowfall_amount) -%}
+    <li class="design-packs__snowflake design-packs__snowflake-{{ i }}" style="--snow-size: 30;
+            --left-position: 100;
+            --minimum-falling-speed: 5000;
+            --animation-duration: {{ section.settings.snowfall_speed }};
+            --animation-delay: 5000;
+            --blur: 5;"></li>
+  {%- endfor -%}
+  </ul>
+</section>
+{%- endcapture -%}
+{{ minify | strip_newlines }}
+
+{% comment %} Schema {% endcomment %}
+{% schema %}
+{
+  "name": "Snowfall",
+  "class": "DP__snowfall",
+  "settings": [
+    {
+      "type": "select",
+      "id": "snowfall_amount",
+      "label": "Amount of snow",
+      "options": [
+        {
+          "value": "25",
+          "label": "Light"
+        },
+        {
+          "value": "50",
+          "label": "Medium"
+        },
+        {
+          "value": "150",
+          "label": "Heavy"
+        }
+      ],
+      "default": "50"
+    },
+    {
+      "type": "select",
+      "id": "snowfall_speed",
+      "label": "Snowfall speed",
+      "options": [
+        {
+          "value": "20000",
+          "label": "Slow"
+        },
+        {
+          "value": "10000",
+          "label": "Medium"
+        },
+        {
+          "value": "5000",
+          "label": "Fast"
+        }
+      ],
+      "default": "10000"
+    },
+    {
+      "type": "header",
+      "content": "📱 Mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_mobile",
+      "label": "Hide on smaller screens",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "html",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "html",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Snowfall 🎒"
+    }
+  ]
+}
+{% endschema %}
+
+{%- comment -%} JSON Settings {%- endcomment -%}
+<script type="application/json" data-dsgn-pck="{{ section.id }}">
+  {
+    "id": {{ section.id | json }}
+  }
+</script>
+{%- comment -%} JavaScript {%- endcomment -%}
+<script data-dsgn-pck-js="{{ section.id }}">
+(function(){
+
+  const designPack = {
+    settings: {},
+    getNumber: function(min, max){
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    },
+    load: function(section){
+
+      const snowflakes = section.querySelectorAll('.design-packs__snowflake');
+
+      snowflakes.forEach(function(flake, index){
+        // Left position
+        const leftPositionVal = flake.style.getPropertyValue('--left-position');
+        const leftPosition = designPack.getNumber(1, leftPositionVal);
+        flake.style.setProperty('--left-position', `${leftPosition}%`);
+
+        // Snow size
+        const snowSizeVal = flake.style.getPropertyValue('--snow-size');
+        const snowSize = designPack.getNumber(1, snowSizeVal);
+        flake.style.setProperty('--snow-size', `${snowSize}px`);
+
+        //Animation duration
+        const animateSpeedVal = flake.style.getPropertyValue('--animation-duration');
+        const minimumFallingSpeedVal = flake.style.getPropertyValue('--minimum-falling-speed');
+        const animateSpeed = designPack.getNumber(1, animateSpeedVal) + parseInt(minimumFallingSpeedVal);
+        flake.style.setProperty('--animation-duration', `${animateSpeed}ms`);
+
+        //Animation delay
+        const animationDelay = designPack.getNumber(1, flake.style.getPropertyValue('--animation-delay'));
+        flake.style.setProperty('--animation-delay', `${animationDelay}ms`);
+
+        //Filter
+        const blurVal = flake.style.getPropertyValue('--blur');
+        const blur = designPack.getNumber(2, blurVal);
+        flake.style.setProperty('--blur', `${blur}px`);
+      })
+
+    },
+    unload: function(section){
+
+    }
+  }
+
+  window.addEventListener('shopify:section:unload', function (e) {
+    const settings = document.querySelector(`[data-dsgn-pck="${e.detail.sectionId}"]`);
+    const sectionId = e.detail.sectionId;
+    const section = document.querySelector(`#DP--${e.detail.sectionId}`);
+    if (sectionId == designPack.settings.id){
+      designPack.unload(section);
+    }
+  });
+
+  designPack.settings = JSON.parse(document.querySelector('[data-dsgn-pck="{{ section.id }}"]').innerHTML);
+  const sectionId = {{ section.id | json }};
+  const section = document.querySelector(`#DP--${sectionId}`);
+
+  if (sectionId == designPack.settings.id){
+    designPack.load(section);
+  }
+})()
+</script>

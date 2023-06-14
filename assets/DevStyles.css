@@ -1,0 +1,43 @@
+.CreativeCodesMain .counter--inner {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    padding: 10% 2rem;
+    max-width: 700px;
+    margin: auto;
+      text-align: center;
+}
+
+.CreativeCodesMain .counter--inner .counter--timer {
+    font-weight: 900;
+    font-size: 105px;
+    line-height: 1.2;
+    margin: 1rem 0;
+    letter-spacing: 0px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hover--effect {
+    position: absolute;
+    top: 100%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    background: #5a595933; 
+    transition: top 0.3s ease;
+}
+.CreativeCodesMain .button:hover .hover--effect{
+    top: 0;
+   transition: top 0.3s ease;
+}
+
+
+
+@media(max-width: 767px){
+  .CreativeCodesMain .counter--inner .counter--timer{
+    font-size: 65px;
+  }
+}

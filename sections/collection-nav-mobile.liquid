@@ -1,0 +1,46 @@
+<span class="overlay_nav"></span>
+<div class="mobile__link-wrapper">
+    <div class="container">
+        <button type="button" id="drawer__close-button" class="drawer__close-button drawer__close-button--block tap-area" data-action="close" title="{{ 'general.accessibility.close' | t | escape }}">
+            {%- render 'icon' with 'close' -%}
+        </button>
+      <ul class="link-bar__wrapper link-bar__linklist list__unstyled">
+        {%- for link in section.settings.menu.links -%}
+          {% assign child_list_handle = link.title | handleize %}
+
+          {% if linklists[child_list_handle].links != blank %}
+            <li class="link-bar__link-item brand__mobile--mega-menu {% if link.active %}link-bar__link-item--selected{% endif %}">
+              <a href="{{ link.url }}" class="link-bar__link link--animated {% if link.active %}text--underlined{% endif %}">
+                {{ link.title }}
+              </a>
+              <ul class="brand__mobile--mega-menu-wrapper">
+                {% for childlink in linklists[child_list_handle].links %}
+                  <li class="link-bar__link-item {% if childlink.active %}link-bar__link-item--selected{% endif %}">
+                    <a href="{{ childlink.url }}" class="link-bar__link link--animated {% if childlink.active %}text--underlined{% endif %}">{{ childlink.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% else %}
+            <li class="link-bar__link-item {% if link.active %}link-bar__link-item--selected{% endif %}">
+              <a href="{{ link.url }}" class="link-bar__link link--animated {% if link.active %}text--underlined{% endif %}">{{ link.title }}</a>
+            </li>
+          {% endif %}
+        {%- endfor -%}
+      </ul>
+    </div>
+</div>
+
+{% schema %}
+{
+    "name": "Collection Nav Mobile",
+    "class": "Collection Nav Mobile",
+    "settings": [
+        {
+            "type":"link_list",
+            "id": "menu",
+            "label": "Collection Nav Mobile"
+        }
+    ]
+}
+{% endschema %}

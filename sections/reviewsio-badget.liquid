@@ -1,0 +1,42 @@
+<!-- Reviews.io Widget START -->
+<script src="https://widget.reviews.io/badge-modern/dist.js"></script>
+<div id="badge-230" style="max-width:230px;"></div>
+<script>
+    reviewsBadgeModern('badge-230', {
+    store: 'greenmnky.de',
+    primaryClr: '#182A19',
+    starsClr: '#3CAA35',
+translateReviews:" Bewertungen",
+translateAverage:" Durchschnitt",
+translateDecimal:"."
+    });
+</script>
+
+
+<!-- Reviews.io Widget END -->
+
+{% schema %}
+  {
+    "name": "badget",
+    "settings": [
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Reviews"
+        }
+    ],
+    "presets": [
+        {
+            "name": "WIDGET NAME",
+            "category": "Text"
+        }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

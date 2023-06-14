@@ -1,0 +1,118 @@
+{%- if section.settings.background != settings.background and section.settings.background != 'rgba(0,0,0,0)' -%}
+  {%- assign blends_with_background = false -%}
+{%- else -%}
+  {%- assign blends_with_background = true -%}
+{%- endif -%}
+
+<style>
+  #shopify-section-{{ section.id }} {
+    {%- if block.settings.text_color == 'rgba(0,0,0,0)' -%}
+      {%- assign heading_color = settings.heading_color -%}
+      {%- assign text_color = settings.text_color -%}
+    {%- else -%}
+      {%- assign heading_color = block.settings.text_color -%}
+      {%- assign text_color = block.settings.text_color -%}
+    {%- endif -%}
+
+    {%- if block.settings.background == 'rgba(0,0,0,0)' -%}
+      {%- assign block_background = settings.background -%}
+      {%- assign secondary_background = settings.secondary_background -%}
+    {%- else -%}
+      {%- assign block_background = block.settings.background -%}
+      {%- assign secondary_background = block.settings.background | color_mix: text_color, 85 -%}
+    {%- endif -%}
+
+    --secondary-background: {{ secondary_background.red }}, {{ secondary_background.green }}, {{ secondary_background.blue }};
+    --heading-color: {{ heading_color.red }}, {{ heading_color.green }}, {{ heading_color.blue }};
+    --text-color: {{ text_color.red }}, {{ text_color.green }}, {{ text_color.blue }};
+
+    --block-background: {{ block_background.red }}, {{ block_background.green }}, {{ block_background.blue }};
+  }
+
+     @media screen and (min-width: 741px) {
+      .containerpaddingright{
+        padding-right: 0!important;
+      }
+      .faq__itemWrap{
+        margin-right: 0!important;
+        max-width: 626px;!important;
+      }
+    }
+</style>
+
+<div class="block__color-wrapper">
+  <div class="container containerpaddingright">
+    <div class="{% unless blends_with_background %}vertical-breather{% endunless %}">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+            {%- comment -%}
+              ----------------------------------------------------------------------------------------------------------------
+              FAQ HEADing BLOCK TYPE
+              ----------------------------------------------------------------------------------------------------------------
+            {%- endcomment -%}
+          {%- when 'FAQHEAD' -%}
+            {%- if block.settings.FAQtitle != blank or block.settings.content != blank -%}
+              <header
+                class="block__header {% if block.settings.content != blank %}block__header--tight{% endif %} text-container"
+                {{ block.shopify_attributes }}
+                style="background-color:{{- block.settings.FAQHEADbackground -}};color:{{- block.settings.FAQHEADtext_color -}};"
+              >
+                {%- if block.settings.FAQtitle != blank -%}
+                  <h1 class="heading h2">{{ block.settings.FAQtitle | escape }}</h1>
+                {%- endif -%}
+
+                {%- if block.settings.content -%}
+                  {{- block.settings.content -}}
+                {%- endif -%}
+              </header>
+            {%- endif -%}
+            {%- comment -%}
+              ----------------------------------------------------------------------------------------------------------------
+              FAQtitle2 BLOCK TYPE
+              ----------------------------------------------------------------------------------------------------------------
+            {%- endcomment -%}
+
+          {%- when 'FAQtitle2' -%}
+            <h2
+              id="category-{{ block.id }}-{{ block.id }}"
+              class="faq__category heading h6 anchor"
+              {{ block.shopify_attributes }}
+              style="background-color:{{- block.settings.FAQtitle2background -}};color:{{- block.settings.FAQtitle2text_color -}};"
+            >
+              {{- block.settings.FAQtitle2 | escape -}}
+            </h2>
+
+            {%- comment -%}
+              ----------------------------------------------------------------------------------------------------------------
+              FAQHEAD BLOCK TYPE
+              ----------------------------------------------------------------------------------------------------------------
+            {%- endcomment -%}
+
+          {%- when 'FAQQUS' -%}
+            <div class="faq__wrapper faq__itemWrap" {{ block.shopify_attributes }} itemscope itemtype="https://schema.org/FAQPage">
+              <div class="faq__item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question" style="background-color:{{- block.settings.FAQQUSbackground -}};color:{{- block.settings.FAQQUStext_color -}};" >
+                <button is="toggle-button"
+                  class="collapsible-toggle text--strong"
+                  aria-controls="block-{{ idd }}-{{ block.id }}-{{ block.id }}"
+                  aria-expanded="false"
+                  itemprop="name" >{{- block.settings.title -}} <span class="animated-plus "> </span>
+                </button>
+
+                <collapsible-content id="block-{{ idd }}-{{ block.id }}-{{ block.id }}"
+                  class="collapsible anchor"
+                  itemscope
+                  itemprop="acceptedAnswer"
+                  itemtype="https://schema.org/Answer"
+                  {{ block.shopify_attributes }}
+                >
+                  <div class="collapsible__content text-container" itemprop="text">
+                    {{ block.settings.answer }}
+                  </div>
+                </collapsible-content>
+              </div>
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>

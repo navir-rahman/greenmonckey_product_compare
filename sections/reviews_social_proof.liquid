@@ -1,0 +1,46 @@
+<div id="ReviewsWidget"></div>
+
+<link rel="stylesheet" href="https://widget.reviews.io/elements/style.css">
+<script src="https://widget.reviews.io/elements/dist.js"></script>
+<script>
+    new ReviewsWidget('#ReviewsWidget', {
+        store: 'greenmnky.de',
+        widget: 'social-proof',
+        options: {
+            perspective: 10,
+            card_amount: {{7}}
+        }
+    });
+</script>
+
+{% schema %}
+  {
+    "name": "reviews_social_proof",
+    "settings": [
+        {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Reviews"
+        }
+    ],
+    "presets": [
+        {
+            "name": "reviews_social_proof",
+            "category": "Text"
+        }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
+
+
+
+
+
+    

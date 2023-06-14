@@ -1,0 +1,547 @@
+{%- comment -%}
+{
+  "pack_name": "Comparison slider",
+  "pack_author": "Design Packs"
+}
+{%- endcomment -%}
+
+{%- comment -%} Images: all placeholders {%- endcomment -%}
+{%- assign placeholder_image_id = 'RbbdzZBKRDY' -%}
+{%- assign placeholder_image_id_2 = 'DBtgQI-9XdM' -%}
+
+{% comment %} Images: responsive image widths {% endcomment %}
+{%- assign widths = '180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1950, 2100, 2260, 2450, 2700, 3000, 3350, 3750, 4100' -%}
+
+{%- comment -%} Layout: has user entered measurement value into max-width field? {%- endcomment -%}
+{%- if section.settings.max_width contains 'px' or section.settings.max_width contains '%' -%}
+  {%- assign max_width = section.settings.max_width -%}
+{%- else -%}
+  {%- assign max_width = section.settings.max_width | append: 'px' -%}
+{%- endif -%}
+
+{%- comment -%} Text: custom font_picker values {%- endcomment -%}
+{%- capture font_settings_list -%}
+{{ section.settings.main_font | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}~
+{{ section.settings.main_font | font_modify: 'style', 'italic' | font_modify: 'weight', 'bolder' | font_face: font_display: 'swap' }}~
+{%- endcapture -%}
+{%- assign font_array = font_settings_list | split: '~' -%}
+
+{%- capture minify -%}
+{%- comment -%} CSS {%- endcomment -%}
+<style>
+{%- if section.settings.override_theme_font != blank -%}
+  {%- for font in font_array -%}
+    {%- unless font contains 'error' -%}{{ font }}{%- endunless -%}
+  {%- endfor -%}
+  #DP--{{ section.id }} {
+    --main-font: {{ section.settings.main_font.family }}, {{ section.settings.main_font.fallback_families }};
+    --main-font-weight: {{ section.settings.main_font.weight }};
+    --main-font-style: {{ section.settings.main_font.style }};
+  }
+{% endif %}
+
+#DP--{{ section.id }} {
+  overflow: visible;
+  background: {{ section.settings.background_color }};
+  margin-bottom: {{ section.settings.outer_margin }}px;
+  margin-top: {{ section.settings.outer_margin }}px;
+  --slider-width: 100vw;
+  --slider-height: 100vh;
+}
+
+#DP--{{ section.id }} .dsgn-pck__sizer {
+  padding-top: {{ section.settings.inner_padding }}px;
+  padding-bottom: {{ section.settings.inner_padding }}px;
+  width: {{ section.settings.base_width }}%;
+  max-width: {{ max_width }};
+  flex-wrap: wrap;
+  gap: 10%;
+}
+
+#DP--{{ section.id }} .dsgn-pck__compare {
+  position: relative;
+  aspect-ratio: {{ section.settings.left_image.width | default: 1200 }} / {{ section.settings.left_image.height | default: 800 }};
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider {
+  position: absolute;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+  cursor: grab;
+  display: block !important;
+  position: relative;
+  top: calc(50% - 25px);
+  left: calc(50% - 25px);
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider:active {
+  cursor: grabbing;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider-handle {
+  background: {{ section.settings.handle_color }};
+  border: 4px solid {{ section.settings.border_color }};
+  border-radius: 50%;
+  transition: border-color 0.2s;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider-handle svg {
+  width: 50%;
+  height: 50%;
+  margin: auto;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider-handle svg path {
+  fill: {{ section.settings.drag_color }};
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__slider img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__image {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__overlay {
+  border-right: 2px solid {{ section.settings.border_color }};
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__overlay:after {
+  display: block;
+  content: '';
+  width: 2px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: {{ section.settings.border_color }};
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+}
+
+#DP--{{ section.id }} .dsgn-pck__comparison__overlay img {
+  height: 100%;
+  width: auto;
+}
+
+#DP--{{ section.id }} .dsgn-pck__caption {
+  position: absolute;
+  display: block;
+  color: {{ section.settings.caption_text }};
+  left: 0;
+  top: 0;
+  width: max-content;
+  max-width: 200px;
+  margin: 10px;
+  padding: 0.3em 0.8em;
+  background-color: {{ section.settings.caption_background }};
+  line-height: calc(3px + 2ex + 3px);
+  font-size: calc(var(--dp-g-body-size, var(--dp-body-size, 18px)) * {{ section.settings.text_size | times: 0.008 }});
+  {%- if section.settings.override_theme_font != blank -%}
+  font-family: var(--main-font);
+  font-weight: var(--main-font-weight);
+  font-style: var(--main-font-style);
+  {%- endif -%}
+}
+
+#DP--{{ section.id }} .dsgn-pck__caption--right {
+  right: 0;
+  left: auto;
+}
+
+{%- if section.settings.custom_css != blank -%}
+  {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+  {%- for declaration in custom_section_declarations -%}
+    {%- if declaration contains '{' -%}
+      #DP--{{ section.id }} {{ declaration }} }
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+  #DP--{{ section.id }} {
+    margin-top: {{ section.settings.outer_margin | divided_by: 2 }}px;
+    margin-bottom: {{ section.settings.outer_margin | divided_by: 2 }}px;
+  }
+
+  #DP--{{ section.id }} .dsgn-pck__sizer {
+    min-width: 70%;
+    padding-top: {{ section.settings.inner_padding | divided_by: 2 }}px;
+    padding-bottom: {{ section.settings.inner_padding | divided_by: 2 }}px;
+    gap: 40px;
+  }
+
+  #DP--{{ section.id }} .dsgn-pck__compare {
+    position: relative;
+    aspect-ratio: {{ section.settings.left_image.width | default: 1000 }} / {{ section.settings.left_image.height | default: 1000 }};
+  }
+
+  #DP--{{ section.id }} .dsgn-pck__caption {
+    max-width: 100px;
+  }
+
+  {%- if section.settings.mobile_custom_css != blank -%}
+    {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+    {%- for declaration in mobile_custom_declarations -%}
+      {%- if declaration contains '{' -%}
+        #DP--{{ section.id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+}
+</style>
+
+{%- comment -%} HTML {%- endcomment -%}
+<section id="DP--{{ section.id }}" class="DP--{{ section.id }} dsgn-pck dsgn-pck__section dsgn-pck__comparison-slider">
+  <div class="dsgn-pck__sizer">
+    <div class="dsgn-pck__compare">
+      <div class="dsgn-pck__comparison__image dsgn-pck__comparison__image--right dsgn-pck__caption--right">
+        {%- if section.settings.right_image -%}
+          {%- capture sizes -%}
+            {{ section.settings.base_width }}vw
+          {%- endcapture -%}
+          {{ section.settings.right_image | image_url: width: 5000 | image_tag: loading: 'lazy', widths: widths, sizes: sizes }}
+        {%- else -%}
+          <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id }}_1200x.jpg"
+            alt=""
+            loading="lazy"
+            width="1200"
+            height="800">
+        {%- endif -%}
+        {%- if section.settings.right_caption != blank -%}
+          <span class="dsgn-pck__caption dsgn-pck__caption--right">{{ section.settings.right_caption }}</span>
+        {%- endif -%}
+      </div>
+      <div class="dsgn-pck__comparison__slider">
+        {%- if section.settings.handle_image -%}
+          {{ section.settings.handle_image | image_url: width: 800 | image_tag: loading: 'lazy' }}
+        {%- else -%}
+          <div class="dsgn-pck__comparison__slider-handle">
+            <svg viewBox="0 0 20 20" ><path d="M6 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1zm8 0a1 1 0 0 0-1 1v18a1 1 0 1 0 2 0v-18a1 1 0 0 0-1-1z"></path></svg>
+          </div>
+        {%- endif -%}
+      </div>
+      <div class="dsgn-pck__comparison__image dsgn-pck__comparison__overlay dsgn-pck__comparison__image--left">
+        {%- if section.settings.left_image -%}
+          {%- capture sizes -%}
+            {{ section.settings.base_width }}vw
+          {%- endcapture -%}
+          {{ section.settings.left_image | image_url: width: 5000 | image_tag: loading: 'lazy', widths: widths, sizes: sizes }}
+        {%- else -%}
+          <img src="https://cdn.shopify.com/s/files/1/0577/7673/4361/files/{{ placeholder_image_id_2 }}.jpg"
+            alt=""
+            loading="lazy"
+            width="1200"
+            height="800">
+        {%- endif -%}
+        {%- if section.settings.left_caption != blank -%}
+          <span class="dsgn-pck__caption dsgn-pck__caption--left">{{ section.settings.left_caption }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+{%- endcapture -%}
+{{ minify | strip_newlines }}
+
+{% schema %}
+{
+  "name": "Comparison slider",
+  "class": "DP__comparison-slider",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left image"
+    },
+    {
+      "type": "text",
+      "id": "left_caption",
+      "label": "Left caption (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Right image"
+    },
+    {
+      "type": "text",
+      "id": "right_caption",
+      "label": "Right caption (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "handle_image",
+      "label": "Handle image (optional)"
+    },
+    {
+      "type": "header",
+      "content": "✏️ Text appearance"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Text size",
+      "min": 80,
+      "max": 120,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "🎨 Design"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "drag_color",
+      "label": "Handle icon",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Handle background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "caption_text",
+      "label": "Caption text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "caption_background",
+      "label": "Caption background",
+      "default": "#121212"
+    },
+    {
+      "type": "color_background",
+      "id": "background_color",
+      "label": "Background",
+      "default": "linear-gradient(136deg, rgba(27, 33, 86, 1) 11%, rgba(84, 91, 143, 1) 84%)"
+    },
+    {
+      "type": "header",
+      "content": "🖼 Layout"
+    },
+    {
+      "type": "range",
+      "id": "base_width",
+      "label": "Size",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "default": 95,
+      "unit": "%"
+    },
+    {
+      "type": "text",
+      "id": "max_width",
+      "label": "Maximum width",
+      "placeholder": "eg. 1200px",
+      "info": "Sets width constraint for content."
+    },
+    {
+      "type": "range",
+      "id": "inner_padding",
+      "label": "Inner padding",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 40,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "outer_margin",
+      "label": "Outer margin",
+      "info": "Only applies to top and bottom.",
+      "min": 0,
+      "max": 100,
+      "default": 0,
+      "step": 5,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    },
+    {
+      "type": "checkbox",
+      "id": "override_theme_font",
+      "label": "Override default theme font",
+      "default": false
+    },
+    {
+      "type": "font_picker",
+      "id": "main_font",
+      "label": "Text",
+      "default": "sans-serif"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Comparison slider 🎒",
+      "settings": {
+      }
+    }
+  ]
+}
+{% endschema %}
+
+{%- comment -%} JSON Settings {%- endcomment -%}
+<script type="application/json" data-dsgn-pck="{{ section.id }}">
+  {
+    "id": {{ section.id | json }}
+  }
+</script>
+
+{%- comment -%} JavaScript {%- endcomment -%}
+<script data-dsgn-pck-js="{{ section.id }}" type="module" defer>
+(function(){
+
+  const designPack = {
+    settings: {},
+    load: function(section){
+
+      let isClicked = false;
+
+      const image = section.querySelector('.dsgn-pck__comparison__overlay');
+      const slider = section.querySelector('.dsgn-pck__comparison__slider');
+      const fullImage = section.querySelector('.dsgn-pck__compare');
+
+      const width = fullImage.offsetWidth;
+      const height = fullImage.offsetHeight;
+
+      function compare() {
+
+        slider.style.top = height / 2 - slider.offsetHeight / 2 + 'px';
+        slider.style.left = width / 2 - slider.offsetWidth / 2 + 'px';
+        image.style.width = '50%';
+
+        slider.addEventListener('mousedown', onSlideStart);
+        slider.addEventListener('touchstart', onSlideStart);
+
+        section.addEventListener('mouseup', () => (isClicked = false));
+        section.addEventListener('touchstop', () => (isClicked = false));
+
+        section.addEventListener('mousemove', onSlideMove);
+        section.addEventListener('touchmove', onSlideMove);
+      }
+
+      function onSlideStart(event) {
+        event.preventDefault();
+        isClicked = true;
+      }
+
+      function onSlideMove(event) {
+        if (!isClicked) return;
+
+        doSlide(currentPosition(event));
+      }
+
+      function currentPosition(event = window.event) {
+        let pageX = event.pageX;
+        let hasTouchScreen = null;
+
+        if ("maxTouchPoints" in navigator && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          hasTouchScreen = navigator.maxTouchPoints > 0;
+        }
+
+        if (typeof hasTouchScreen != 'undefined' && hasTouchScreen != null) {
+          pageX = event.changedTouches[0].pageX
+        }
+
+        let xImage = image.getBoundingClientRect();
+        let x = 0;
+
+        x = pageX - xImage.left;
+
+        if (x < 0) x = 0;
+
+        if (x > width) x = width;
+
+        return x;
+      }
+
+      function doSlide(x) {
+        image.style.width = x + 'px';
+        slider.style.left = image.offsetWidth - slider.offsetWidth / 2 + 'px';
+      }
+
+      compare();
+
+    },
+    unload: function(section){
+      section.classList.remove('dsgn-pck__animation-applied');
+    }
+  }
+
+  window.addEventListener('shopify:section:unload', function (e) {
+    const settings = document.querySelector(`[data-dsgn-pck="${e.detail.sectionId}"]`);
+    const sectionId = e.detail.sectionId;
+    const section = document.querySelector(`#DP--${e.detail.sectionId}`);
+    if (sectionId == designPack.settings.id){
+      designPack.unload(section);
+    }
+  });
+
+  designPack.settings = JSON.parse(document.querySelector('[data-dsgn-pck="{{ section.id }}"]').innerHTML);
+  const sectionId = {{ section.id | json }};
+  const section = document.querySelector(`#DP--${sectionId}`);
+
+  if (sectionId == designPack.settings.id){
+    designPack.load(section);
+  }
+})()
+</script>

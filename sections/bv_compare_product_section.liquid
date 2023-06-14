@@ -1,0 +1,192 @@
+{% comment %} css style  {% endcomment %}
+{{ 'bv_compare_product.css' | asset_url | stylesheet_tag }}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto + Sans + Display:wght@600;700 &display=swap');
+</style>
+{% comment %} components {% endcomment %}
+
+
+
+<script>
+  // Object created using object literal notation
+  var pro_obj = {
+    {% for item in shop.metaobjects.product_compare_data_list.values %}
+      product_{{-forloop.index-}} : {
+        id: "product_{{-forloop.index-}}",
+        name: "{{ item.title }}",
+        prossesor: {
+          type:"{{- item.prossesor.type -}}",
+          value: {{ item.prossesor }},
+        },
+        Design: `{{ item.design }}`,
+        image: "{{ item.image | img_url: 500 }}",
+        varient_coror: "{{ item.varient_coror }}",
+        multi_line: `{{ item.multi_line }}`
+      },{% endfor %}
+  };
+
+  console.log(pro_obj);
+  {% comment %} var all_product ={
+    {% for item in shop.metaobjects.product_compare_data_list.values %}
+      product__{{-forloop.index-}} : {
+          id: "product_id__{{-forloop.index-}}",
+          name: "{{ item.title }}",
+      },
+      {%endfor%}
+  }
+   {% endcomment %}
+</script>
+
+
+
+
+{% assign first_render_product_1_handle = "product-compare-data-list-caxe2ues" %}
+{% assign first_render_product_2 = "another title" %}
+{% assign first_render_product_3 = "some product" %}
+
+
+
+
+
+
+<section class="section bv_comp_section">
+  {% comment %} {% render 'bv_compare_product_html', param: value %} {% endcomment %}
+
+
+
+  {% comment %} title  {% endcomment %}
+
+    <div class="bv_box_center"> <p class="comp_main_title">
+      Which pixel is right for you?
+    </p>
+  </div>
+
+  {% comment %} products  {% endcomment %}
+
+
+  {% comment %} render products  {% endcomment %}
+
+
+<div>
+  <div class="comp_allProduct_container">
+  {% for item in shop.metaobjects.product_compare_data_list.values %}
+
+
+    <div class="bv_box_center comp_single_product">
+      <div class="bv_comp_Img">
+        <img
+          loading="eager"
+          src="{{ item.image | img_url: 'master' }}"
+          alt="{{ item.image.alt }}">
+      </div>
+      {% comment %} produt slot  {% endcomment %}
+
+<form class="product_list_select compselect_form" onchange="render_product(this.comp_selection{{-forloop.index-}}.value)">
+  <div class="comp_selection_container">
+    <select name="comp_selection{{-forloop.index-}}" title="select{{-forloop.index-}}" id="comp_selection{{-forloop.index-}}" class="comp_select">
+      {% for item in shop.metaobjects.product_compare_data_list.values %}
+      <option value="product_{{-forloop.index-}}">{{ item.title }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+      <div class="price_box bv_box_center">
+        <p class="comp_Price">509 € s.i.</p>
+        <p class="comp_sub_title">or €21.21/month for financing over 24 months*</p>
+      </div>
+      {% comment %} buy button  {% endcomment %}
+      <button class="comp_buy_btn">Buy</button>
+      {% comment %} product link  {% endcomment %}
+      <a href="#">
+        <p class="comp_product_link">a Additional Information
+        </p>
+      </a>
+
+    </div>
+
+    
+  {% endfor %}
+  </div>
+
+
+  <div class="container_max_width">
+    {% comment %} title  {% endcomment %}
+    <div class="bv_comp_discrip_container">
+      <span class="bv_comp_discrip_devider"></span>
+      <p class="bv_comp_dis_name">Prozessoren</p>
+      <span class="bv_comp_discrip_devider"></span>
+    </div>
+
+    
+  {% comment %} data  {% endcomment %}
+  <div class="comp_allProduct_container">
+      {% for item in shop.metaobjects.product_compare_data_list.values %}
+
+      <div class="comp_discription">
+        <p>{{- item.prossesor.value.children[0].children[0].value -}}</p>
+      </div>
+    
+    {% endfor %}
+
+    </div>
+  </div>
+
+
+
+
+  {% comment %} LIST TEXT  {% endcomment %}
+  
+  <div class="container_max_width">
+    {% comment %} title  {% endcomment %}
+    <div class="bv_comp_discrip_container">
+      <span class="bv_comp_discrip_devider"></span>
+      <p class="bv_comp_dis_name">Prozessoren</p>
+      <span class="bv_comp_discrip_devider"></span>
+    </div>
+
+    
+  {% comment %} data  {% endcomment %}
+    <div class="comp_allProduct_container">
+      {% for item in shop.metaobjects.product_compare_data_list.values %}
+
+      <div class="comp_discription" >
+        <p id="comp_discription{{-forloop.index-}}">{{- item.multi_line | newline_to_br  -}}</p>
+      </div>
+    
+    {% endfor %}
+
+    </div>
+  </div>
+
+
+
+
+
+  </div>
+</section>
+
+
+
+{% comment %} javascript {% endcomment %}
+{{ 'bv_compare_product.js' | asset_url | script_tag }}
+
+{% comment %} sceama {% endcomment %}
+
+{% schema %}
+  {
+    "name": "bv_compare_product",
+    "settings": [
+      {
+        "type": "richtext",
+        "id": "prossesor",
+        "label": "Content"
+      }
+    ],
+    "presets": [
+      {
+        "name": "bv_compare_product"
+      }
+    ]
+  }
+{% endschema %}

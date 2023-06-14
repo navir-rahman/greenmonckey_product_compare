@@ -1,0 +1,19 @@
+<script>
+  const dfLayerOptions = {
+    installationId: '9d974fad-b1bb-4365-b8c8-afb4f34c2511',
+    zone: 'eu1'
+  };
+
+
+    /** START SHOPIFY OPTIONS **/
+    dfLayerOptions.language = "{{ shop.locale }}";
+    /** END SHOPIFY OPTIONS **/
+
+
+    (function (l, a, y, e, r, s) {
+    r = l.createElement(a); r.onload = e; r.async = 1; r.src = y;
+    s = l.getElementsByTagName(a)[0]; s.parentNode.insertBefore(r, s);
+  })(document, 'script', 'https://cdn.doofinder.com/livelayer/1/js/loader.min.js', function () {
+    doofinderLoader.load(dfLayerOptions);
+  });
+</script>

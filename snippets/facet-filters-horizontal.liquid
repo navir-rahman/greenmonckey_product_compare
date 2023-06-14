@@ -1,0 +1,182 @@
+{%- comment -%}
+Code that create the faceted search for the collection and search pages. It currently supports the following options:
+
+  - filters: either the collection or search filters
+  - filters_position: can either be "always_visible" or "drawer"
+{%- endcomment -%}
+
+{%- assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ',' -%}
+{%- assign color_white_label = 'general.label.white' | t | downcase -%}
+{%- assign size_label_list = 'general.label.size' | t | replace: ', ', ',' | downcase | split: ',' -%}
+
+{%- assign active_filters_count = 0 -%}
+
+{%- for filter in filters -%}
+  {%- if filter.type == 'list' -%}
+    {%- assign active_filters_count = active_filters_count | plus: filter.active_values.size -%}
+  {%- elsif filter.type == 'price_range' and filter.min_value.value or filter.max_value.value -%}
+    {%- assign active_filters_count = active_filters_count | plus: 1 -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- if request.page_type == 'collection' -%}
+  {%- assign page_url = collection.url -%}
+  {%- assign sort_by = collection.sort_by | default: collection.default_sort_by -%}
+{%- elsif request.page_type == 'search' -%}
+  {%- assign page_url = routes.search_url -%}
+  {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
+{%- endif -%}
+
+<facet-filters {% if filters_position == 'always_visible' %}always-visible{% endif %} id="facet-filters" class="product-facet__filters product-facet__filters--horizontal" >
+  <span class="drawer__overlay"></span>
+  
+    <form id="facet-filters-form">
+      <input type="hidden" name="sort_by" value="{{ sort_by }}">
+
+      {%- if request.page_type == 'search' -%}
+        <input type="hidden" name="q" value="{{ search.terms | escape }}">
+        <input type="hidden" name="type" value="product">
+        <input type="hidden" name="options[prefix]" value="last">
+        <input type="hidden" name="options[unavailable_products]" value="{{ settings.search_unavailable_products }}">
+      {% elsif request.page_type == 'collection' and collection.current_type != blank or collection.current_vendor != blank %}
+        <input type="hidden" name="q" value="{{ collection.current_vendor | default: collection.current_type | escape }}">
+      {%- endif -%}
+
+      <div class="product-facet__filter-list">
+        {%- comment -%}Exclude Filters for Kollektionen{%- endcomment -%}
+        {% assign hiddenFilterLabelList = ' Brand , Device , Modell ' %}
+        
+          {%- for filter in filters -%}
+            {% if hiddenFilterLabelList contains filter.label %}
+            {%- assign is_filter_group_open = false -%}
+
+            {%- if filter.active_values.size > 0 or filter.max_value.value != blank or filter.min_value.value != blank or forloop.first and section.settings.open_first_filter_group -%}
+              {%- assign is_filter_group_open = true -%}
+            {%- endif -%}
+
+            <div class="product-facet__filter-item product-facet__filter-item--kollektion {% if filter.label != 'Device' %}noClick{% endif %}" data-index="{{ forloop.index }}  ">
+              <div class="selected">
+                {% for value in filter.values %}
+                  {% if value.count > 0 %}
+                    {% assign hasValues = true %}
+                    {% break %}
+                  {% else %}
+                    {% assign hasValues = false %}
+                  {% endif %}
+
+                {% endfor %}
+                <h3>
+                  
+                  {% if filter.active_values.size > 0 %}
+                    {{- filter.active_values[0].label -}}
+                  {% elsif hasValues == false %}
+                    Kein Ergebnis
+                  {% else %}
+                    {{- filter.label -}}
+                  {% endif %}
+                </h3>
+              </div>
+
+              
+              {%- assign filter_label_downcase = filter.label | downcase -%}
+                  <div class="select-box">
+                    <div class="options-container"> 
+                      {%- for filter_value in filter.values -%}
+                        {% if filter_value.count > 0 %}
+                          <div class="option">
+                            <label for="{{ filter_value.param_name | escape }}-{{ forloop.index }}">
+                              <input class="checkbox" type="radio" name="{{ filter_value.param_name }}" id="{{ filter_value.param_name | escape }}-{{ forloop.index }}" value="{{ filter_value.value | escape }}" {% if filter_value.active %}checked="checked"{% endif %} {% if filter_value.count == 0 %}disabled{% endif %}>
+
+                              {{ filter_value.label }}
+                            </label>
+                          </div>
+                        {% endif %}
+                      {%- endfor -%}
+                    </div>
+                  </div>
+
+            </div>
+          {% endif %}
+          {%- endfor -%}
+      </div>
+      <a href="{{ page_url }}?sort_by={{ sort_by }}" data-action="clear-filters" class="tag-link link text--subdued">{{ 'collection.general.clear_filters' | t }}</a>
+      <noscript>
+        <button type="submit" class="product-facet__submit button button--secondary">{{ 'collection.general.apply_filters' | t }}</button>
+      </noscript>
+    </form>
+</facet-filters>
+
+
+<script>
+  function initFilters(){
+    // Custom Select Box implementation
+    const filterItems = document.querySelectorAll(".product-facet__filter-item--kollektion");
+    const clearBtn = document.querySelector('[data-action="clear-filters"]')
+    const allOptionsContainers = document.querySelectorAll(".options-container");
+    filterItems.forEach(filterItem =>{
+      const selected = filterItem.querySelector(".selected");
+      const optionsContainer = filterItem.querySelector(".options-container");
+      const optionsList = filterItem.querySelectorAll("label");
+
+      selected.addEventListener("click", () => {  
+        allOptionsContainers.forEach(option => {
+          if( option != optionsContainer){
+            option.classList.remove("active");  
+          }
+        });
+        optionsContainer.classList.toggle("active");
+      });
+  
+      optionsList.forEach(option => {
+        option.addEventListener("click", () => {
+          selected.innerHTML = option.querySelector("label").innerHTML;
+          option.querySelector("input").setAttribute('checked', 'checked');
+          optionsContainer.classList.remove("active");
+        });
+      });
+    })
+
+    clearBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      let currentUrl = document.URL
+      window.location.replace(currentUrl.split('?')[0])
+    })
+  }
+
+  function checkIfFilterItemHasValue(){
+    const filterItems = document.querySelectorAll(".product-facet__filter-item--kollektion");
+    const headingText = document.querySelector(".product-facet__filters-header .heading")
+    const overlayText = document.querySelector("#overlay-text")
+    const overlay = document.querySelector(".product-list-overlay")
+
+    if(!!filterItems[0].querySelector('[checked="checked"]')){
+      filterItems[1].classList.remove('noClick')
+      headingText.innerHTML = "Wähle deine Brand"
+      overlayText.innerHTML = "Wähle zuerst deine Brand"
+      overlay.style.display = 'block'
+    }
+    if(!!filterItems[1].querySelector('[checked="checked"]')){
+      filterItems[2].classList.remove('noClick')
+      headingText.innerHTML = "Wähle dein Modell"
+      overlayText.innerHTML = "Wähle zuerst dein Modell"
+      window.dontFilter = false;
+      overlay.style.display = 'block';
+    }
+    if(!!filterItems[2].querySelector('[checked="checked"]')){
+      headingText.innerHTML = "Wähle deinen Style"
+      overlay.style.display = 'none'
+    }
+  }
+
+  window.addEventListener("load", (event) => {
+    initFilters();
+    checkIfFilterItemHasValue();
+  });
+
+  document.addEventListener('filterChanged', function(){
+    checkIfFilterItemHasValue();
+    initFilters();
+  })
+  
+
+</script>

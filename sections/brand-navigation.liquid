@@ -1,0 +1,1494 @@
+<style>
+      {%- if section.settings.custom_css != blank -%}
+    {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+    {%- for declaration in custom_section_declarations -%}
+      {%- if declaration contains '{' -%}
+        #shopify-section-{{ section.id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+
+  /* Landscape phones and down */
+  @media (max-width: 480px) {
+
+    {%- if section.settings.mobile_custom_css != blank -%}
+      {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+      {%- for declaration in mobile_custom_declarations -%}
+        {%- if declaration contains '{' -%}
+          #shopify-section-{{ section.id }} {{ declaration }} }
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  }
+</style>
+<section id="shopify-section-{{ section.id }}">
+  {% if section.settings.large_back_btn == true %}<span id="backHeightControl"></span>{% endif %}
+
+  <div
+    style="
+      padding-top: {{ section.settings.padding_top}}px;
+      padding-bottom: {{ section.settings.padding_bottom}}px;
+      padding-left: {{ section.settings.padding_left}}px;
+      padding-right: {{ section.settings.padding_right}}px;
+      background-color: {{ section.settings.bg_color}}
+    "
+  >
+    <div class="container">
+      {%- if section.settings.title != blank
+        or section.settings.subheading != blank
+        or section.settings.content != blank
+      -%}
+        <header class="section__header {% if section.settings.content != blank %}section__header--tight{% endif %}">
+          <div class="text-container">
+            {%- if section.settings.subheading != blank -%}
+              <h2 class="heading heading--small">{{ section.settings.subheading }}</h2>
+            {%- endif -%}
+
+            {%- if section.settings.title != blank -%}
+              <h3 class="heading h2">{{ section.settings.title }}</h3>
+            {%- endif -%}
+          </div>
+        </header>
+      {%- endif -%}
+      <nav class="brand-nav nav_global">
+        <ul class="brand-nav-wrap">
+          {%- for link in section.settings.brand_nav.links -%}
+            <li>
+              <a
+                href="{{ link.url }}"
+                class="xirosoft-{{ link.title | downcase | replace: " ", "_" -}}"
+                {% if link.active %}
+                  aria-current="page"
+                {% endif %}
+              >
+                <span class="link_bg_img"></span>
+                {{ link.title }}
+                <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                  <path d="M1.00016 12L6.51367 6.5L1.00016 1" stroke="#707070"/>
+                </svg>
+              </a>
+
+              {%- if link.links != blank -%}
+                <ul style="background-color: {{section.settings.submenu_bg_color}}">
+                  {%- for child_link in link.links -%}
+                    <li>
+                      <a
+                        href="{{ child_link.url }}"
+                        class="xirosoft-{{ child_link.title | downcase | replace: " ", "_" -}}"
+                        {% if child_link.active %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        <span class="link_bg_img"></span>
+                        {{ child_link.title }}
+                        <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                          <path d="M1.00016 12L6.51367 6.5L1.00016 1" stroke="#707070"/>
+                        </svg>
+                      </a>
+
+                      {%- if child_link.links != blank -%}
+                        <ul style="background-color: {{section.settings.submenu_bg_color}}">
+                          {%- for grandchild_link in child_link.links -%}
+                            <li>
+                              <a
+                                href="{{ grandchild_link.url }}"
+                                class="xirosoft-{{ grandchild_link.title | downcase | replace: " ", "_" -}}"
+                                {% if grandchild_link.active %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                <span class="link_bg_img"></span>
+                                {{ grandchild_link.title }}
+                                <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
+                                  <path d="M1.00016 12L6.51367 6.5L1.00016 1" stroke="#707070"/>
+                                </svg>
+                              </a>
+                            </li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+
+      {% style %}
+          {% assign count = 1%}
+          {% for block in section.blocks %}
+
+        {% for i in (1..100) %}
+          		{% assign identifier = 'identifier-' | append: i %}
+              	{% assign nav_image = 'nav_image-' | append: i %}
+
+             			{% if block.settings[identifier] != blank %}
+                      .xirosoft-{{ block.settings[identifier] | downcase | replace: " ", "_" }} span.link_bg_img {
+                          background-image: url({{ block.settings[nav_image] | image_url }});
+                          {% if block.settings[identifier] %}
+                              display: block;
+                          {% endif %}
+                      }
+
+                  {% endif %}
+          	{% endfor %}
+
+          {%- endfor -%}
+      {% endstyle %}
+    </div>
+  </div>
+</section>
+{% schema %}
+ {
+   "name": "Brand Navigation",
+   "settings": [
+       {
+         "type": "text",
+         "id": "subheading",
+         "label": "Subheading"
+       },
+       {
+         "type": "text",
+         "id": "title",
+         "label": "Heading"
+       },
+	{
+         "type": "link_list",
+         "id": "brand_nav",
+         "label": "Menu"
+       },
+	{
+         "type": "color_background",
+         "id": "bg_color",
+         "label": "Background color",
+	  "default": "transparent"
+       },
+ 		{
+         "type": "color",
+         "id": "submenu_bg_color",
+         "label": "Submenu background color",
+	  "default": "#f0f7f0"
+       },
+       {
+         "type": "checkbox",
+         "id": "large_back_btn",
+         "label": "Show large back button",
+         "default": true
+       },
+       {
+         "type": "number",
+         "id": "padding_top",
+         "label": "Padding top",
+         "default": 40
+       },
+	{
+         "type": "number",
+         "id": "padding_bottom",
+         "label": "Padding bottom",
+	  "default": 40
+       },
+		{
+         "type": "number",
+         "id": "padding_left",
+         "label": "Padding left",
+	  "default": 0
+       },
+		{
+         "type": "number",
+         "id": "padding_right",
+         "label": "Padding right",
+	  "default": 0
+       },
+    {
+      "type": "header",
+      "content": "🚨 Advanced"
+    },
+    {
+      "type": "html",
+      "id": "custom_css",
+      "label": "CSS"
+    },
+    {
+      "type": "html",
+      "id": "mobile_custom_css",
+      "label": "Mobile CSS",
+      "info": "Applied on screens less than 480px."
+    },
+    {
+      "type": "checkbox",
+      "id": "override_theme_font",
+      "label": "Override default theme font",
+      "default": false
+    }
+],
+
+"blocks": [
+     { "name": "Nav image block",
+       "type": "nav_img",
+	"settings" : [
+         {
+           "type":"text",
+           "id":"identifier-1",
+           "label":"Identifier 1"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-1",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-2",
+           "label":"Identifier 2"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-2",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-3",
+           "label":"Identifier 3"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-3",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-4",
+           "label":"Identifier 4"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-4",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-5",
+           "label":"Identifier 5"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-5",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-6",
+           "label":"Identifier 6"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-6",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-7",
+           "label":"Identifier 7"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-7",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-8",
+           "label":"Identifier 8"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-8",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-9",
+           "label":"Identifier 9"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-9",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-10",
+           "label":"Identifier 10"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-10",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-11",
+           "label":"Identifier 11"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-11",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-12",
+           "label":"Identifier 12"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-12",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-13",
+           "label":"Identifier 13"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-13",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-14",
+           "label":"Identifier 14"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-14",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-15",
+           "label":"Identifier 15"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-15",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-16",
+           "label":"Identifier 16"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-16",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-17",
+           "label":"Identifier 17"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-17",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-18",
+           "label":"Identifier 18"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-18",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-19",
+           "label":"Identifier 19"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-19",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-20",
+           "label":"Identifier 20"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-20",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-21",
+           "label":"Identifier 21"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-21",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-22",
+           "label":"Identifier 22"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-22",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-23",
+           "label":"Identifier 23"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-23",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-24",
+           "label":"Identifier 24"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-24",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-25",
+           "label":"Identifier 25"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-25",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-26",
+           "label":"Identifier 26"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-26",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-27",
+           "label":"Identifier 27"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-27",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-28",
+           "label":"Identifier 28"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-28",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-29",
+           "label":"Identifier 29"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-29",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-30",
+           "label":"Identifier 30"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-30",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-31",
+           "label":"Identifier 31"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-31",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-32",
+           "label":"Identifier 32"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-32",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-33",
+           "label":"Identifier 33"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-33",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-34",
+           "label":"Identifier 34"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-34",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-35",
+           "label":"Identifier 35"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-35",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-36",
+           "label":"Identifier 36"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-36",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-37",
+           "label":"Identifier 37"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-37",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-38",
+           "label":"Identifier 38"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-38",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-39",
+           "label":"Identifier 39"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-39",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-40",
+           "label":"Identifier 40"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-40",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-41",
+           "label":"Identifier 41"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-41",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-42",
+           "label":"Identifier 42"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-42",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-43",
+           "label":"Identifier 43"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-43",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-44",
+           "label":"Identifier 44"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-44",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-45",
+           "label":"Identifier 45"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-45",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-46",
+           "label":"Identifier 46"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-46",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-47",
+           "label":"Identifier 47"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-47",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-48",
+           "label":"Identifier 48"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-48",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-49",
+           "label":"Identifier 49"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-49",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-50",
+           "label":"Identifier 50"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-50",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-51",
+           "label":"Identifier 51"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-51",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-52",
+           "label":"Identifier 52"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-52",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-53",
+           "label":"Identifier 53"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-53",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-54",
+           "label":"Identifier 54"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-54",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-55",
+           "label":"Identifier 55"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-55",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-56",
+           "label":"Identifier 56"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-56",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-57",
+           "label":"Identifier 57"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-57",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-58",
+           "label":"Identifier 58"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-58",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-59",
+           "label":"Identifier 59"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-59",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-60",
+           "label":"Identifier 60"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-60",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-61",
+           "label":"Identifier 61"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-61",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-62",
+           "label":"Identifier 62"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-62",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-63",
+           "label":"Identifier 63"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-63",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-64",
+           "label":"Identifier 64"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-64",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-65",
+           "label":"Identifier 65"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-65",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-66",
+           "label":"Identifier 66"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-66",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-67",
+           "label":"Identifier 67"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-67",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-68",
+           "label":"Identifier 68"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-68",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-69",
+           "label":"Identifier 69"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-69",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-70",
+           "label":"Identifier 70"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-70",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-71",
+           "label":"Identifier 71"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-71",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-72",
+           "label":"Identifier 72"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-72",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-73",
+           "label":"Identifier 73"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-73",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-74",
+           "label":"Identifier 74"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-74",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-75",
+           "label":"Identifier 75"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-75",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-76",
+           "label":"Identifier 76"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-76",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-77",
+           "label":"Identifier 77"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-77",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-78",
+           "label":"Identifier 78"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-78",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-79",
+           "label":"Identifier 79"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-79",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-80",
+           "label":"Identifier 80"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-80",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-81",
+           "label":"Identifier 81"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-81",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-82",
+           "label":"Identifier 82"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-82",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-83",
+           "label":"Identifier 83"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-83",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-84",
+           "label":"Identifier 84"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-84",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-85",
+           "label":"Identifier 85"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-85",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-86",
+           "label":"Identifier 86"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-86",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-87",
+           "label":"Identifier 87"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-87",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-88",
+           "label":"Identifier 88"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-88",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-89",
+           "label":"Identifier 89"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-89",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-90",
+           "label":"Identifier 90"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-90",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-91",
+           "label":"Identifier 91"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-91",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-92",
+           "label":"Identifier 92"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-92",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-93",
+           "label":"Identifier 93"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-93",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-94",
+           "label":"Identifier 94"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-94",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-95",
+           "label":"Identifier 95"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-95",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-96",
+           "label":"Identifier 96"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-96",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-97",
+           "label":"Identifier 97"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-97",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-98",
+           "label":"Identifier 98"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-98",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-99",
+           "label":"Identifier 99"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-99",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-100",
+           "label":"Identifier 100"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-100",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-101",
+           "label":"Identifier 101"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-101",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-102",
+           "label":"Identifier 102"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-102",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-103",
+           "label":"Identifier 103"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-103",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-104",
+           "label":"Identifier 104"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-104",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-105",
+           "label":"Identifier 105"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-105",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-106",
+           "label":"Identifier 106"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-106",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-107",
+           "label":"Identifier 107"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-107",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-108",
+           "label":"Identifier 108"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-108",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-109",
+           "label":"Identifier 109"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-109",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-110",
+           "label":"Identifier 110"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-110",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-111",
+           "label":"Identifier 111"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-111",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-112",
+           "label":"Identifier 112"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-112",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-113",
+           "label":"Identifier 113"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-113",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-114",
+           "label":"Identifier 114"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-114",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-115",
+           "label":"Identifier 115"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-115",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-116",
+           "label":"Identifier 116"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-116",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-117",
+           "label":"Identifier 117"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-117",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-118",
+           "label":"Identifier 118"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-118",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-119",
+           "label":"Identifier 119"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-119",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-120",
+           "label":"Identifier 120"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-120",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-121",
+           "label":"Identifier 121"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-121",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-122",
+           "label":"Identifier 122"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-122",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-123",
+           "label":"Identifier 123"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-123",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-124",
+           "label":"Identifier 124"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-124",
+           "label":"Nav image"
+         },
+         {
+           "type":"text",
+           "id":"identifier-125",
+           "label":"Identifier 125"
+         },
+         {
+           "type":"image_picker",
+           "id":"nav_image-125",
+           "label":"Nav image"
+         }
+       ]
+     }
+],
+   "presets": [
+     {
+     	"name": "Brand Navigation"
+     }
+]
+ }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}

@@ -1,0 +1,71 @@
+<div class="img_container" style="height: {{ section.settings.sec_height }}px; background: {{ section.settings.bg }};">
+  <img src="{{ section.settings.img1 | img_url: '' }}" class="desk_img">
+  <img src="{{ section.settings.img2 | img_url: '' }}" class="mob_img">
+</div>
+
+<style>
+  .img_container{
+    width: 100%;
+    overflow: hidden;
+  }
+  .img_container img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .mob_img{
+    display: none;
+  }
+  @media screen and (max-width: 767px){
+    .mob_img{
+    display: block;
+  }
+    .desk_img{
+      display: none;
+    }
+}
+</style>
+{% schema %}
+  {
+    "name": "Wide Image Section",
+    "settings": [
+      {
+                    "type": "range",
+                    "id": "sec_height",
+                    "min": 10,
+                    "max": 500,
+                    "step": 10,
+                    "unit": "px",
+                    "label": "Section Height",
+                    "default": 100
+                  },
+      {
+                  "type":"color",
+                  "id":"bg",
+                  "label":"Background Color"
+                  },
+      {
+                  "type":"image_picker",
+                  "id":"img1",
+                  "label":"Desktop Image"
+                  },
+      {
+                  "type":"image_picker",
+                  "id":"img2",
+                  "label":"Mobile Image"
+                  }
+    ],
+     "presets":[
+                {
+                  "name":"Wide Image Section",
+                  "category":"custom"
+                }
+              ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

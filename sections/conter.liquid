@@ -1,0 +1,362 @@
+<style>
+      {%- if section.settings.custom_css != blank -%}
+    {%- assign custom_section_declarations = section.settings.custom_css | split: '}' -%}
+    {%- for declaration in custom_section_declarations -%}
+      {%- if declaration contains '{' -%}
+        #counter--{{ section.id }} {{ declaration }} }
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+
+
+  /* Landscape phones and down */
+  @media (max-width: 480px) {
+
+    {%- if section.settings.mobile_custom_css != blank -%}
+      {%- assign mobile_custom_declarations = section.settings.mobile_custom_css | split: '}' -%}
+      {%- for declaration in mobile_custom_declarations -%}
+        {%- if declaration contains '{' -%}
+          #counter--{{ section.id }} {{ declaration }} }
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  }
+</style>
+<div class="CreativeCodesMain" id="counter--{{ section.id }}">
+  <div class="container">
+    <div class="counter--inner">
+      {% if section.settings.subtitle != blank %}
+        <h2 class="heading heading--small">{{ section.settings.subtitle }}</h2>
+      {% endif %}
+      {% if section.settings.title != blank %}
+        <h3 class="heading h2">{{ section.settings.title }}</h3>
+      {% endif %}
+      <div class="counter--timer shake"></div>
+      {% if section.settings.link_text != blank %}
+        <a class="button button--primary" href="{{  section.settings.link }}">
+          <div class="hover--effect"></div>
+          {{ section.settings.link_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Counter",
+  "settings": [
+    {
+      "type":"text",
+      "id":"subtitle",
+      "label":"Sub Heading"
+    },
+    {
+      "type":"text",
+      "id":"title",
+      "label":"Heading"
+    },
+    {
+      "type":"text",
+      "id":"link_text",
+      "label":"Button Text"
+    },
+    {
+      "type":"url",
+      "id":"link",
+      "label":"Link"
+    },
+    {
+      "type":"color",
+      "id":"bg",
+      "label":"Section Background"
+    },
+    {
+      "type":"color",
+      "id":"text_clr",
+      "label":"Text Color"
+    },
+     {
+      "type":"color",
+      "id":"btn_bg",
+      "label":"Button Background"
+    },
+          {
+      "type":"color",
+      "id":"btn_text_clr",
+      "label":"Button Text Color"
+    },
+    {
+      "type":"color",
+      "id":"counter_text_clr",
+      "label":"Counter Text Color"
+    },
+          {
+      "type":"color",
+      "id":"counter_shdow_clr",
+      "label":"Counter Shadow Color"
+    },
+    {
+      "type":"header",
+      "content":"Counter Settings"
+    },
+    {
+      "type":"range",
+      "id":"Year",
+      "min":1990,
+      "max":2050,
+      "step":1,
+      "default":2022,
+      "label":"Year"
+    },
+    {
+      "type":"select",
+      "id":"month",
+      "options":[
+        {
+          "value":"January",
+          "label":"January"
+        },
+                  {
+          "value":"February",
+          "label":"February"
+        },
+                  {
+          "value":"March",
+          "label":"March"
+        },
+                  {
+          "value":"April",
+          "label":"April"
+        },
+                  {
+          "value":"May",
+          "label":"May"
+        },
+                  {
+          "value":"June",
+          "label":"June"
+        },
+                  {
+          "value":"July",
+          "label":"July"
+        },
+                  {
+          "value":"August",
+          "label":"August"
+        },
+                  {
+          "value":"September",
+          "label":"September"
+        },
+                  {
+          "value":"October",
+          "label":"October"
+        },
+                  {
+          "value":"November",
+          "label":"November"
+        },
+                  {
+          "value":"December",
+          "label":"December"
+        }
+      ],
+    "label":"Month"
+    },
+          {
+      "type":"range",
+      "id":"date",
+      "min":1,
+      "max":31,
+      "step":1,
+      "default":1,
+      "label":"Date"
+    },
+    {
+      "type":"range",
+      "id":"hours",
+      "min":0,
+      "max":24,
+      "step":1,
+      "default":1,
+      "label":"Hours"
+    },
+          {
+      "type":"range",
+      "id":"minutes",
+      "min":0,
+      "max":59,
+      "step":1,
+      "default":1,
+      "label":"Minutes"
+    },
+          {
+      "type":"range",
+      "id":"seconds",
+      "min":0,
+      "max":24,
+      "step":1,
+      "default":1,
+      "label":"Seconds"
+    },
+    {
+      "type":"header",
+      "content":"Counter Interval"
+    },
+    {
+      "type":"number",
+      "id":"TimeInterval",
+      "label":"Interval In Seconds",
+      "info":"Convert your interval to Seconds"
+    },
+  {
+    "type": "header",
+    "content": "🚨 Advanced"
+  },
+  {
+    "type": "html",
+    "id": "custom_css",
+    "label": "CSS"
+  },
+  {
+    "type": "html",
+    "id": "mobile_custom_css",
+    "label": "Mobile CSS",
+    "info": "Applied on screens less than 480px."
+  },
+  {
+    "type": "checkbox",
+    "id": "override_theme_font",
+    "label": "Override default theme font",
+    "default": false
+  }
+  ],
+  "presets":[
+    {
+      "name":"Counter"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  function diff_minutes() {
+            dt1 = new Date("{{section.settings.month}} {{ section.settings.date }}, {{section.settings.Year}} {{section.settings.hours}}:{{section.settings.minutes}}:{{section.settings.seconds}}");
+            dt2 = new Date();
+            return  Math.floor((dt2.getTime() - dt1.getTime())/{{ section.settings.TimeInterval }}000).toLocaleString();
+
+
+         };
+       document.querySelector('.counter--timer').innerText = diff_minutes();
+        setInterval(function(){
+           console.log(diff_minutes());
+          const timer = document.querySelector('.counter--timer');
+          timer.innerText = diff_minutes()
+
+        }, {{ section.settings.TimeInterval }}000)
+</script>
+<style>
+    #counter--{{ section.id }}{
+      background: {{ section.settings.bg }};
+    }
+    #counter--{{ section.id }} .heading.heading--small, #counter--{{ section.id }} h3.heading.h2{
+      color: {{section.settings.text_clr}};
+    }
+    #counter--{{ section.id }} a.button.button--primary{
+      background: {{ section.settings.btn_bg }};
+      color: {{ section.settings.btn_text_clr }};
+      margin-top: 48px;
+    }
+     #counter--{{ section.id }} .counter--timer{
+       color: {{ section.settings.counter_text_clr }};
+     }
+
+
+
+
+
+  .shake {
+    position: relative;
+    display: inline-block;
+    font-weight: 800;
+    color: royalblue;
+    overflow: hidden;
+    background: linear-gradient(to right, {% if section.settings.counter_shdow_clr != blank %}{{ section.settings.counter_shdow_clr }}{% else %}#00000054{% endif %}, {% if section.settings.counter_shdow_clr != blank %}{{ section.settings.counter_shdow_clr }}{% else %}#00000054{% endif %} 50%, {{ section.settings.counter_text_clr }} 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 100%;
+    background-position: 100%;
+    transition: background-position 275ms ease;
+    text-decoration: none;
+     animation: shine {{ section.settings.TimeInterval }}s infinite linear;
+  }
+
+  @keyframes shine {
+     0% {
+      background-position: 100%;
+    }
+    100% {
+      background-position: 0%;
+    }
+  }
+
+
+
+  /* .shake {
+     background: linear-gradient(to right,{% if section.settings.counter_shdow_clr != blank %}{{ section.settings.counter_shdow_clr }}{% else %}#00000054{% endif %} 0%,{{ section.settings.counter_text_clr }} 100%);
+
+    background:linear-gradient(to right,
+        red    20%,
+        red  20%,
+        red  40%,
+        red   40%,
+        red   60%,
+        purple 60%,
+        purple 80%,
+        purple 100%
+    );
+    background-position: 0;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine {{ section.settings.TimeInterval }}s infinite linear;
+    animation-fill-mode: forwards;
+    -webkit-text-size-adjust: none;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @keyframes shine {
+     0% {
+      background-position: 0px;
+    }
+    100% {
+      background-position: 490px;
+    }
+  }
+     */
+
+  /*
+    .counter--timer.shake:before {
+      content: " ";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: #00000054;
+      animation: shake 21s linear infinite;
+      right: 0;
+
+  }
+
+
+  @keyframes shake {
+   0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+
+  } */
+</style>

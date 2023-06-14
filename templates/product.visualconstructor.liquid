@@ -1,0 +1,14 @@
+<script>var visualTranslations = {
+  'add_to_cart':"{{ 'visual_builder.add_to_cart' | t }}",
+  'available_with':"{{ 'visual_builder.available_with' | t }}",
+  'not_available_with':"{{ 'visual_builder.not_available_with' | t }}",
+  'setup':"{{ 'visual_builder.setup' | t }}",
+  'items_selected':"{{ 'visual_builder.items_selected' | t }}",
+  'total':"{{ 'visual_builder.total' | t }}",
+  'tax_included':"{{ 'visual_builder.tax_included' | t }}",
+  'tax_not_included':"{{ 'visual_builder.tax_not_included' | t }}"         
+};</script>
+<div id="visual-constructor-component" taxes_included="{{shop.taxes_included}}" product_handle="{{product.handle}}"></div>
+
+{{ "visual-builder-overrides.css" | asset_url | stylesheet_tag }}
+{{ 'https://builder.appclay.com/frontend.js' | script_tag }}

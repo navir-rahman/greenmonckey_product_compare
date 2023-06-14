@@ -1,0 +1,247 @@
+<style>
+    div#video_controls_bar{background: #33333317; color:#CCC; width:100%; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;position: absolute;
+        bottom: 0;z-index: 21;}
+  .timer{
+      color: #fff;
+      display: flex;
+      justify-content: space-around;
+  }
+  .playvolIconcontainer{
+        display: flex;
+      justify-content: space-around;
+      align-items: flex-start;
+  }
+
+    input[type='range'] {
+        -webkit-appearance: none !important;
+        background: gray;
+       width:90%;
+    	border:#666 1px solid;
+        height:4px;
+    }
+    input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+       width:90%;
+        background: #FFF;
+        height:15px;
+        width:15px;
+    	border-radius:100%;
+    	cursor:pointer;
+    }
+</style>
+
+<div class="container videoSlider">
+  {%- if section.settings.title != blank or section.settings.subheading != blank -%}
+    <header class="section__header">
+      <div class="text-container">
+        {%- if section.settings.subheading != blank -%}
+          <h2 class="heading heading--small">{{ section.settings.subheading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.title != blank -%}
+          <h3 class="heading h2">{{ section.settings.title }}</h3>
+        {%- endif -%}
+      </div>
+    </header>
+  {%- endif -%}
+  <div class="swiper mySwiper">
+    <div class="swiper-wrapper">
+      {% for block in section.blocks %}
+        {% if block.settings.button_link != blank %}
+          <div class="swiper-slide homeSec3LB hasVid" onclick="playVid(this.id)" id="AAvideo{{ forloop.index }}">
+            <div class="homeSec3LBInner">
+              <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="40" cy="40" r="40" fill="white"/>
+                <path d="M36.3095 30.8364C34.5923 29.8138 33.2002 30.6515 33.2002 32.7059V47.8667C33.2002 49.9232 34.5923 50.7598 36.3095 49.7382L49.0735 42.1387C50.7913 41.1157 50.7913 39.4584 49.0735 38.4358L36.3095 30.8364Z" fill="#182A19"/>
+              </svg>
+              <video muted loop preload="metadata">
+                <source src="{{ block.settings.button_link }}#t=1" type="video/mp4">
+                Your browser does not support HTML5 video.
+              </video>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+
+    {% for block in section.blocks %}
+      <!-- The modal -->
+      <div id="Avideo{{ forloop.index }}" class="modal2">
+        <!-- modal content -->
+        <div class="modal-content2">
+          <span class="close" id="Avideo{{ forloop.index }}B">&times;</span>
+          <div class="modalVid">
+            <img
+              src="https://cdn.shopify.com/s/files/1/0624/6635/9520/files/ratio.jpg?v=1674218568"
+              style="opacity:0;width:auto;height:100%"
+            >
+            <!-- <video muted  autoplay preload="metadata"  id="my_video" ontouchmove="myFunctionx(event)" > -->
+            <video muted autoplay preload="metadata" id="my_video">
+              <source src="{{ block.settings.button_link }}" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+            <div id="video_controls_bar">
+              <div class="timer">
+                <span id="Avideo{{ forloop.index }}curtimetext">00:00</span> 
+                <span id="Avideo{{ forloop.index }}durtimetext">00:00</span>
+              </div>
+              <div>
+                <input
+                  id="Avideo{{ forloop.index }}seekslider"
+                  class="modelVideo"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="0"
+                  step="1"
+                >
+              </div>
+              <div class="playvolIconcontainer">
+                <button id="Avideo{{ forloop.index }}mutebtn">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#fff"
+                    style="width: 20px;"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75L19.5 12m0 0l2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6l4.72-4.72a.75.75 0 011.28.531V19.94a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.506-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.395C2.806 8.757 3.63 8.25 4.51 8.25H6.75z" />
+                  </svg>
+                </button>
+                <button id="Avideo{{ forloop.index }}playpausebtn">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="#fff"
+                    style="width: 20px;"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                  </svg>
+                </button>
+                <input
+                  style="display:none"
+                  id="Avideo{{ forloop.index }}volumeslider"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value="100"
+                  step="1"
+                >
+                <button id="Avideo{{ forloop.index }}fullscreenbtn">[ &nbsp; ]</button>
+              </div>
+            </div>
+          </div>
+          {%- assign product = all_products[block.settings.product] -%}
+          {% if block.settings.product != blank %}
+            <div
+              class="modalProduct"
+              onclick="location.href='{{ product.url }}'"
+              style="background:{{ section.settings.bgcolor }}"
+            >
+              <div class="modalProductImg" style="background:{{ section.settings.bgcolorImg }}">
+                <img src="{{ product.featured_image | img_url: '480x480' }}">
+              </div>
+              <div class="modalProductDesc">
+                <span style="color:{{ section.settings.spanColor }}"> {{ product.title }} </span>
+                <span style="color:{{ section.settings.spanColor }}">
+                  {{- product.selected_or_first_available_variant.price | money -}}
+                </span>
+
+                <span class="modalRedirect">
+                  <a
+                    href=" {% if block.settings.btnlink != blank %}{{ block.settings.btnlink }}{% else %}{{ product.url}}{% endif %}"
+                    style="color:{{ section.settings.spanColor }}"
+                  >
+                    {% if block.settings.btnlink != blank %}
+                      {{ block.settings.btntext }}
+                    {% else %}
+                      See Product >>
+                    {% endif %}
+                  </a></span
+                >
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Videos Slider",
+  "settings": [
+     {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+
+       {
+        "type": "color",
+        "id": "bgcolor",
+        "label": "Product Section Background"
+      },
+       {
+        "type": "color",
+        "id": "bgcolorImg",
+        "label": "Product Image Background"
+      },
+       {
+        "type": "color",
+        "id": "spanColor",
+        "label": "Text Color"
+      }
+
+  ],
+"blocks": [
+  {
+    "type": "item",
+    "name": "Item",
+    "settings": [
+     {
+        "type": "url",
+        "id": "button_link",
+        "label": "Video link"
+      },
+         {
+        "type": "product",
+      "id": "product",
+      "label": "Select Product"
+      },
+       {
+        "type": "text",
+        "id": "btntext",
+        "label": "Button Text",
+         "default":"Watch Now >>"
+      },
+       {
+        "type": "url",
+        "id": "btnlink",
+        "label": "Button Link"
+      }
+    ]
+  }
+],
+"presets": [
+  {
+    "name": "Videos Slider"
+
+  }
+]
+}
+{% endschema %}
+
+<style></style>

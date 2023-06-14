@@ -1,0 +1,276 @@
+{%- comment -%}
+------------------------------------------------------------------------------------------------------------------------
+NOTE TO DEVELOPERS: welcome to Focal theme! We hope that you will enjoy editing this theme as much as we did for
+  developing it. We have put a lot of work to make this theme as developer friendly as possible by offering you
+  hooks to integrate into critical parts of the theme. You will find the complete technical documentation (including
+  all events, dependencies...) in the "custom.js" file, located in the Assets folder.
+------------------------------------------------------------------------------------------------------------------------
+{%- endcomment -%}
+
+<!doctype html>
+
+{%- assign direction = 'ltr' -%}
+{%- case request.locale.iso_code -%}
+  {%- when 'ar' or 'arc' or 'dv' or 'fa' or 'ha' or 'he' or 'kwh' or 'ks' or 'ku' or 'ps' or 'ur' or 'yi' -%}
+    {%- assign direction = 'rtl' -%}
+{%- endcase -%}
+
+<html class="no-js" lang="{{ request.locale.iso_code }}" dir="{{ direction }}">
+  <head>
+    <meta name="google-site-verification" content="vmEE7ggASF0J_BhA73jpEyMl7_7F9V9dlIJJ0dmEKNU" />
+{% include "load-metafields" %}
+{% render 'pagefly-head' %}
+{% include 'kiwiSizing' %}
+
+
+ {%- render 'layouthub_header' -%}
+  <link rel="stylesheet" href="https://obscure-escarpment-2240.herokuapp.com/stylesheets/bcpo-front.css">
+  <script>var bcpo_product={{ product | json }}; {% if product.metafields.bcpo.bcpo_data %}var bcpo_data={{ product.metafields.bcpo.bcpo_data }};{% endif %} {% if shop.metafields.bcpo.bcpo_settings %}var bcpo_settings={{ shop.metafields.bcpo.bcpo_settings }};{% endif %}var inventory_quantity = [];{% for v in product.variants %}inventory_quantity.push({{v.inventory_quantity}});{% endfor %}if(bcpo_product) { for (var i = 0; i < bcpo_product.variants.length; i += 1) { bcpo_product.variants[i].inventory_quantity = inventory_quantity[i]; }}window.bcpo = window.bcpo || {}; bcpo.cart = {{cart | json}}; bcpo.ogFormData = FormData;</script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="theme-color" content="{{ settings.header_background }}">
+
+    <title>{% if page_title == blank %}{{ shop.name }}{% else %}{{ page_title }}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% endif %}</title>
+
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- if settings.favicon -%}
+      <link rel="shortcut icon" href="{{ settings.favicon | img_url: '96x96' }}" type="image/png">
+    {%- endif -%}
+
+    {%- comment -%}Few prefech to increase performance on commonly used third-parties{%- endcomment -%}
+    <link rel="preconnect" href="https://cdn.shopify.com">
+    <link rel="dns-prefetch" href="https://productreviews.shopifycdn.com">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+
+    {%- unless settings.heading_font.system? and settings.text_font.system? -%}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+    {%- endunless -%}
+
+    {%- comment -%}Preload important resources{%- endcomment -%}
+    <link rel="preload" as="style" href="{{ 'theme.css' | asset_url }}">
+    <link rel="preload" as="script" href="{{ 'vendor.js' | asset_url }}">
+    <link rel="preload" as="script" href="{{ 'theme.js' | asset_url }}">
+
+    {%- comment -%}
+      IMPLEMENTATION NOTE: for improving performance, Focal tries to preload images on known pages (such as blog page,
+      product or collection pages). In order to keep a main JS file size minimal, the theme also lazyloads non-essential
+      libraries (such as PhotoSwipe or Flickity) and only loads them on demand.
+    {%- endcomment -%}
+    {%- if request.page_type == 'product' -%}
+      {%- assign selected_media = product.selected_variant.featured_media | default: product.featured_media -%}
+
+      <link rel="preload" as="fetch" href="{{ product.url }}.js" crossorigin>
+      <link rel="preload" as="image" imagesizes="(max-width: 999px) calc(100vw - 48px), 640px" imagesrcset="{% render 'image-attributes', image: selected_media, sizes: '400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800', sizes_only: true %}">
+
+      {%- if product.media.size > 1 -%}
+        <link rel="preload" as="script" href="{{ 'flickity.js' | asset_url }}">
+      {%- endif -%}
+    {%- elsif request.page_type == 'collection' and collection.image -%}
+      <link rel="preload" as="image" media="(max-width: 740px)" imagesizes="100vw" imagesrcset="{% render 'image-attributes', image: collection.image, sizes: '400,500,600,700,800,900,1000', height_constraint: 600, crop: 'center', sizes_only: true %}">
+      <link rel="preload" as="image" media="(min-width: 741px)" imagesizes="100vw" imagesrcset="{% render 'image-attributes', image: collection.image, sizes: '600,700,800,1000,1200,1400,1600,1800,2000,2200,2400,2600', sizes_only: true %}">
+    {%- endif -%}
+
+    {% render 'social-meta-tags' %}
+    {% render 'microdata-schema' %}
+    {% render 'css-variables', direction: direction %}
+    {% render 'js-variables', direction: direction %}
+
+    <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+
+     <script
+      src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+      crossorigin="anonymous"
+      defer
+    ></script>
+    <script src="{{ 'vendor.js' | asset_url }}" defer></script>
+    <script src="{{ 'theme.js' | asset_url }}" defer></script>
+    <script src="{{ 'custom.js' | asset_url }}" defer></script>
+  
+  {% include 'buddha-megamenu' %}
+  {{ content_for_header }}
+{% include 'ets_mm_assets' %}
+  <script id="vopo-head">(function () { if (((document.documentElement.innerHTML.includes('asyncLoad') && !document.documentElement.innerHTML.includes('\/obscure' + '-escarpment-2240')) || (window.bcpo && bcpo.disabled)) && !window.location.href.match(/[&?]yesbcpo/)) return; var script = document.createElement('script'); script.src = "https://obscure-escarpment-2240.herokuapp.com/js/best_custom_product_options.js?shop={{shop.permanent_domain}}"; var vopoHead = document.getElementById('vopo-head'); vopoHead.parentNode.insertBefore(script, vopoHead); })();</script>
+  {% render 'shogun-head' %}
+
+  {% render 'rapid-search-settings' %}
+<!--DOOFINDER-SHOPIFY-->
+        {% if content_for_header contains 'doofinder-installed.js' %}
+        {% render 'doofinder-script-tag' %}
+        {% endif %}
+        <!--/DOOFINDER-SHOPIFY-->	<script src="https://magic-menu.risingsigma.com/js/create-magic-menu.min.js" async></script>
+
+
+  {% if template == 'cart' %}{% include "revy-bundle-script" %}{% endif %}
+
+
+
+{% include 'hulk_po_vd.liquid' %}</head>
+{%- assign feature_classes = '' -%}
+
+  {%- if settings.show_image_zoom -%}
+    {% assign feature_classes = feature_classes | append: ' features--image-zoom' %}
+  {%- endif -%}
+
+  <body class="no-focus-outline {{ feature_classes }}" data-instant-allow-query-string>
+    {%- comment -%}Common SVG definitions that we are re-using in several places{%- endcomment -%}
+    <svg class="visually-hidden">
+      <linearGradient id="rating-star-gradient-half">
+        <stop offset="50%" stop-color="rgb(var(--product-star-rating))" />
+        <stop offset="50%" stop-color="rgb(var(--product-star-rating))" stop-opacity="0.4" />
+      </linearGradient>
+    </svg>
+
+    <a href="#main" class="visually-hidden skip-to-content">{{ 'general.accessibility.skip_to_content' | t }}</a>
+    <loading-bar class="loading-bar"></loading-bar>
+
+    {%- if request.page_type != 'gift_card' and request.page_type != 'password' -%}
+      {%- section 'announcement-bar' -%}
+      {%- section 'popup' -%}
+      {%- section 'header' -%}
+      {%- section 'collection-nav-mobile' -%}
+
+      {%- unless settings.cart_type == 'page' or request.page_type == 'cart' -%}
+        {%- section 'mini-cart' -%}
+      {%- endunless -%}
+    {%- endif -%}
+
+    <div id="main" role="main" class="anchor">
+      {%- comment -%}
+      IMPLEMENTATION NOTE: on collection and search page, the theme was designed to show on mobile the filter bar and/or sort
+        by at the very top of the page. However, due to the fact that sections are isolated, I had to move the code
+        here. Then, the collection section, based on the selected settings, will eventually hide those elements in CSS
+      {%- endcomment -%}
+      {%- if request.page_type == 'collection' or request.page_type == 'search' -%}
+        {%- assign active_filters_count = 0 -%}
+
+        {%- if request.page_type == 'collection' -%}
+          {%- assign filters = collection.filters -%}
+        {%- else -%}
+          {%- assign filters = search.filters -%}
+        {%- endif -%}
+
+        {%- for filter in filters -%}
+          {%- if filter.type == 'list' -%}
+            {%- assign active_filters_count = active_filters_count | plus: filter.active_values.size -%}
+          {%- elsif filter.type == 'price_range' and filter.min_value.value or filter.max_value.value -%}
+            {%- assign active_filters_count = active_filters_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- assign is_toolbar_collapsed = false -%}
+
+        {%- if request.page_type == 'search' and search.results.first.object_type != 'product' -%}
+          {%- assign is_toolbar_collapsed = true -%}
+        {%- endif -%}
+
+        <div id="mobile-facet-toolbar" class="mobile-toolbar {% if is_toolbar_collapsed %}is-collapsed{% endif %} hidden-lap-and-up">
+          <button is="toggle-button" class="mobile-toolbar__item mobile-toolbar__item--filters {% if active_filters_count > 0 %}has-filters{% endif %}" aria-expanded="false" aria-controls="facet-filters" style="display: none">
+            {%- render 'icon' with 'filters' -%}
+            <span class="mobile-toolbar__item-label">{{- 'collection.general.filters' | t -}}</span>
+          </button>
+
+          <button is="toggle-button" class="mobile-toolbar__item mobile-toolbar__item--sort" aria-expanded="false" aria-controls="sort-by-popover" style="display: none">
+            <span class="mobile-toolbar__item-label">{{- 'collection.general.sort_by' | t -}}</span>
+            {%- render 'icon' with 'chevron' -%}
+          </button>
+        </div>
+      {%- endif -%}
+
+      <!--LayoutHub-Workspace-Start-->{{ content_for_layout }}<!--LayoutHub-Workspace-End-->
+
+      {%- unless request.page_type == 'index' or request.page_type == 'password' or request.page_type == 'gift_card' -%}
+        {%- section 'static-text-with-icons' -%}
+        {%- section 'static-newsletter' -%}
+      {%- endunless -%}
+    </div>
+
+    {%- if request.page_type != 'gift_card' and request.page_type != 'password' -%}
+      {%- section 'footer' -%}
+    {%- endif -%}
+  {%- render 'layouthub_footer' -%} 
+ 
+
+    <!-- Begin eTrusted bootstrap tag -->
+	<script src="https://integrations.etrusted.com/applications/widget.js/v2" defer async></script>
+	<!-- End eTrusted bootstrap tag -->
+
+{% include "bc_banner" %}
+  {% include 'revy-bundle-script' %}
+{% render 'amai_stp-theme-snippet' %}
+{% render 'amai_stp-cart-snippet' %}
+
+{% comment %}START ADCELL APP | DONT REMOVE THIS!{% endcomment %}<script type="text/javascript" src="https://t.adcell.com/js/trad.js?s=shopify&v=1.1.4"></script>
+<script>Adcell.Tracking.track();</script>
+
+
+
+  {%- if template contains 'index' -%}
+    <script type="text/javascript" src="https://t.adcell.com/js/inlineretarget.js?s=shopify&v=1.1.4&method=track&pid=11101&type=startpage" async="async"></script>
+  {%- endif -%}
+
+  {%- if template contains 'collection' -%}
+    {%- assign sku_list = '' -%}
+    {%- for product in collection.products -%}
+      {%- assign sku_list = sku_list | append: product.variants.first.sku | append: ';' -%}
+    {%- endfor -%}
+    <script type="text/javascript"
+      src="https://t.adcell.com/js/inlineretarget.js?s=shopify&v=1.1.4&method=category&pid=11101&categoryName={{collection.title}}&categoryId={{collection.id}}&productIds={{sku_list}}&productSeparator=;"
+      async="async"></script>
+  {%- endif -%}
+
+  {%- if template contains 'product' -%}
+    <script type="text/javascript" src="https://t.adcell.com/js/inlineretarget.js?s=shopify&v=1.1.4&method=product&pid=11101&productId={{product.variants.first.sku}}&productName={{product.title}}&categoryId={{product.collections[0].id}}&productSeparator=;" async="async"></script>
+  {%- endif -%}
+
+  {%- if template contains 'search' -%}
+    {%- assign search_products = search.results | where: "object_type", "product" -%}
+    {%- assign sku_list = '' -%}
+    {%- for product in search_products -%}
+      {%- assign sku_list = sku_list | append: product.variants.first.sku | append: ';' -%}
+    {%- endfor -%}
+    {%- assign search_product_ids_string = sku_list -%}
+
+    <script type="text/javascript" src="https://t.adcell.com/js/inlineretarget.js?s=shopify&v=1.1.4&method=search&pid=11101&search={{search.terms}}&productIds={{search_product_ids_string}}&productSeparator=;" async="async"></script>
+  {%- endif -%}
+
+  {%- if template contains 'cart' -%}
+    {%- assign cart_items_ids = cart.items | map: 'sku' | join: ';' -%}
+    {%- assign cart_items_quantities = cart.items | map: 'quantity' | join: ';' -%}
+    {%- assign cart_items_count = cart.items.size -%}
+
+    {%- if cart.taxes_included -%}
+      {% assign tax_times = 19 | divided_by: 100.0 | plus: 1 %}
+    {% else %}
+      {% assign tax_times = 1 %}
+    {% endif %}
+
+    {%- assign total = 0 -%}
+    {%- for item in cart.items -%}
+      {%- assign total = total | plus: item.original_line_price -%}
+    {%- endfor -%}
+    {% assign total = total | minus: checkout.discounts_amount %}
+
+    {%- assign ds = include.ds | default: ',' -%}
+    {%- assign numdecimals = include.decimals | default: 2 -%}
+    {%- assign parts = total | divided_by: tax_times |  minus: checkout.shipping_price | round: numdecimals | split:'.' -%}
+    {%- assign digits = parts[0] | split:'' -%}
+
+    {%- for digit in digits -%}
+        {%- assign twoFromEnd = digits.size | minus: forloop.index -%}
+        {%- if twoFromEnd == 1 and forloop.index != 0 -%}
+            {%- assign format_price = format_price | append: ds -%}
+            {%- assign format_price = format_price | append: digit -%}
+        {%- else -%}
+            {%- assign format_price = format_price | append: digit -%}
+        {%- endif -%}
+    {%- endfor -%}
+
+    <script type="text/javascript" src="https://t.adcell.com/js/inlineretarget.js?s=shopify&v=1.1.4&method=basket&pid=11101&productIds={{cart_items_ids}}&productSeparator=;&quantities={{cart_items_quantities}}&basketProductCount={{cart.item_count}}&basketTotal={{ format_price }}" async="async"></script>
+  {%- endif -%}{% comment %}DONT REMOVE THIS | END ADCELL APP{% endcomment %}</body>
+</html>

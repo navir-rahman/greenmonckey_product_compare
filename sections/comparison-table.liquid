@@ -1,0 +1,49 @@
+{% schema %}
+  {
+    "name": "Vergleichstabelle",
+    "settings": [],
+    "blocks": [
+      {
+        "type": "column",
+        "name": "Spalte",
+        "settings": [
+          {
+            "type": "text",
+            "id": "column_name",
+            "label": "Spaltenname",
+            "default": "Spaltenname"
+          },
+          {
+            "type": "text",
+            "id": "option1",
+            "label": "Option 1",
+            "default": "Option 1"
+          },
+          {
+            "type": "text",
+            "id": "option2",
+            "label": "Option 2",
+            "default": "Option 2"
+          },
+          {
+            "type": "text",
+            "id": "option3",
+            "label": "Option 3",
+            "default": "Option 3"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+{% for block in section.blocks %}
+  <div class="table-column">
+    <h3>{{ block.settings.column_name }}</h3>
+    <select>
+      <option>{{ block.settings.option1 }}</option>
+      <option>{{ block.settings.option2 }}</option>
+      <option>{{ block.settings.option3 }}</option>
+    </select>
+  </div>
+{% endfor %}

@@ -1,0 +1,51 @@
+<style>
+  .box-1 {
+    height: 50px;
+    background-color: red;
+  }
+</style>
+
+<div class="mobile__link-wrapper">
+    <div class="container">
+      <ul class="link-bar__wrapper link-bar__linklist list__unstyled">
+        {%- for link in quick_links_menu.links -%}
+          {% assign child_list_handle = link.title | handleize %}
+
+          {% if linklists[child_list_handle].links != blank %}
+            <li class="link-bar__link-item brand__mega-menu {% if link.active %}link-bar__link-item--selected{% endif %}">
+              <a href="{{ link.url }}" class="link-bar__link link--animated {% if link.active %}text--underlined{% endif %}">
+                {{ link.title }}
+              </a>
+              <ul class="brand__mega-menu-wrapper">
+                {% for childlink in linklists[child_list_handle].links %}
+                  <li class="link-bar__link-item {% if childlink.active %}link-bar__link-item--selected{% endif %}">
+                    <a href="{{ childlink.url }}" class="link-bar__link link--animated {% if childlink.active %}text--underlined{% endif %}">{{ childlink.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% else %}
+            <li class="link-bar__link-item splide__slide {% if link.active %}link-bar__link-item--selected{% endif %}">
+              <a href="{{ link.url }}" class="link-bar__link link--animated {% if link.active %}text--underlined{% endif %}">{{ link.title }}</a>
+            </li>
+          {% endif %}
+        {%- endfor -%}
+      </ul>
+    </div>
+</div>
+
+<!-- <script>
+    let mega_menus = document.getElementsByClassName("brand__mega-menu");
+
+    for (let i = 0; i < mega_menus.length; i++) {
+      const mega_menu = mega_menus[i];
+      
+      mega_menu.addEventListener("click", function(){
+        if (mega_menu.classList.contains("open")) {
+          mega_menu.classList.remove("open");
+        } else {
+          mega_menu.classList.add("open");
+        }
+      });
+    }
+</script> -->
